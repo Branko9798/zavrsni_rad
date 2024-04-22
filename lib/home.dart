@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses_screen.dart';
-import 'package:zavrsni_rad/revenues_expenses/revenues_screen.dart';
+import 'package:zavrsni_rad/revenues_expenses/expenses/expenses_screen.dart';
+import 'package:zavrsni_rad/revenues_expenses/revnues/revenues_screen.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});

@@ -1,12 +1,13 @@
-import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/home.dart';
+import 'package:zavrsni_rad/notifications_screen.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
 import 'package:zavrsni_rad/revenues_expenses/revnues/revenue_model.dart';
-import 'package:zavrsni_rad/revenues_expenses/revenues_screen.dart';
+
 import 'package:get_it/get_it.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
+import 'package:zavrsni_rad/user_screen.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -26,9 +27,11 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-int myInedx = 0;
+int myIndex = 0;
 
 class _MyAppState extends State<MyApp> {
+  final _pageController = PageController();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -47,6 +50,15 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
       home: Scaffold(
+        body: PageView(
+          controller: _pageController,
+          children: const [Home(), NotificationScreen(), UserScreen()],
+          onPageChanged: (index) {
+            setState(() {
+              myIndex = index;
+            });
+          },
+        ),
         bottomNavigationBar: BottomNavigationBar(
           selectedLabelStyle: const TextStyle(color: Colors.white),
           unselectedItemColor: Colors.white,
@@ -59,11 +71,9 @@ class _MyAppState extends State<MyApp> {
               const IconThemeData(size: 27, color: Colors.white, fill: 1),
           backgroundColor: Colors.tealAccent[400],
           onTap: (index) {
-            setState(() {
-              myInedx = index;
-            });
+            _pageController.jumpToPage(index);
           },
-          currentIndex: myInedx,
+          currentIndex: myIndex,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(
