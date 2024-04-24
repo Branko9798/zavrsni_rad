@@ -138,14 +138,20 @@ class $ExpensesTableTable extends ExpensesTable
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
       'id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _expenseMeta =
-      const VerificationMeta('expense');
+  static const VerificationMeta _expenseNameMeta =
+      const VerificationMeta('expenseName');
   @override
-  late final GeneratedColumn<double> expense = GeneratedColumn<double>(
-      'expense', aliasedName, false,
+  late final GeneratedColumn<String> expenseName = GeneratedColumn<String>(
+      'expense_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _expenseValueMeta =
+      const VerificationMeta('expenseValue');
+  @override
+  late final GeneratedColumn<double> expenseValue = GeneratedColumn<double>(
+      'expense_value', aliasedName, false,
       type: DriftSqlType.double, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, expense];
+  List<GeneratedColumn> get $columns => [id, expenseName, expenseValue];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -161,11 +167,21 @@ class $ExpensesTableTable extends ExpensesTable
     } else if (isInserting) {
       context.missing(_idMeta);
     }
-    if (data.containsKey('expense')) {
-      context.handle(_expenseMeta,
-          expense.isAcceptableOrUnknown(data['expense']!, _expenseMeta));
+    if (data.containsKey('expense_name')) {
+      context.handle(
+          _expenseNameMeta,
+          expenseName.isAcceptableOrUnknown(
+              data['expense_name']!, _expenseNameMeta));
     } else if (isInserting) {
-      context.missing(_expenseMeta);
+      context.missing(_expenseNameMeta);
+    }
+    if (data.containsKey('expense_value')) {
+      context.handle(
+          _expenseValueMeta,
+          expenseValue.isAcceptableOrUnknown(
+              data['expense_value']!, _expenseValueMeta));
+    } else if (isInserting) {
+      context.missing(_expenseValueMeta);
     }
     return context;
   }
@@ -179,7 +195,9 @@ class $ExpensesTableTable extends ExpensesTable
       attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}expense'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}expense_name'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}expense_value'])!,
     );
   }
 
@@ -191,36 +209,46 @@ class $ExpensesTableTable extends ExpensesTable
 
 class ExpensesTableCompanion extends UpdateCompanion<Expense> {
   final Value<String> id;
-  final Value<double> expense;
+  final Value<String> expenseName;
+  final Value<double> expenseValue;
   final Value<int> rowid;
   const ExpensesTableCompanion({
     this.id = const Value.absent(),
-    this.expense = const Value.absent(),
+    this.expenseName = const Value.absent(),
+    this.expenseValue = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ExpensesTableCompanion.insert({
     required String id,
-    required double expense,
+    required String expenseName,
+    required double expenseValue,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
-        expense = Value(expense);
+        expenseName = Value(expenseName),
+        expenseValue = Value(expenseValue);
   static Insertable<Expense> custom({
     Expression<String>? id,
-    Expression<double>? expense,
+    Expression<String>? expenseName,
+    Expression<double>? expenseValue,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (expense != null) 'expense': expense,
+      if (expenseName != null) 'expense_name': expenseName,
+      if (expenseValue != null) 'expense_value': expenseValue,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
   ExpensesTableCompanion copyWith(
-      {Value<String>? id, Value<double>? expense, Value<int>? rowid}) {
+      {Value<String>? id,
+      Value<String>? expenseName,
+      Value<double>? expenseValue,
+      Value<int>? rowid}) {
     return ExpensesTableCompanion(
       id: id ?? this.id,
-      expense: expense ?? this.expense,
+      expenseName: expenseName ?? this.expenseName,
+      expenseValue: expenseValue ?? this.expenseValue,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -231,8 +259,11 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
-    if (expense.present) {
-      map['expense'] = Variable<double>(expense.value);
+    if (expenseName.present) {
+      map['expense_name'] = Variable<String>(expenseName.value);
+    }
+    if (expenseValue.present) {
+      map['expense_value'] = Variable<double>(expenseValue.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -244,7 +275,8 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
   String toString() {
     return (StringBuffer('ExpensesTableCompanion(')
           ..write('id: $id, ')
-          ..write('expense: $expense, ')
+          ..write('expenseName: $expenseName, ')
+          ..write('expenseValue: $expenseValue, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

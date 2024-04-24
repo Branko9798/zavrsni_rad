@@ -52,6 +52,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         body: PageView(
           controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
           children: const [Home(), NotificationScreen(), UserScreen()],
           onPageChanged: (index) {
             setState(() {

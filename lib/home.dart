@@ -62,9 +62,7 @@ class Home extends StatelessWidget {
               },
             ),
           ],
-        )
-        
-        );
+        ));
   }
 
   void _showRevenueScreen(BuildContext context) {

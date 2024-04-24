@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expenses.dart';
+import 'package:zavrsni_rad/revenues_expenses/expenses/expenses_screen.dart';
 import 'package:zavrsni_rad/revenues_expenses/revnues/revenue_model.dart';
 import 'package:zavrsni_rad/revenues_expenses/revnues/revenues.dart';
 
@@ -30,64 +31,58 @@ class RevenuesScreen extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.tealAccent[400],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: <Widget>[
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text('Insert your revenues:'),
-              ],
-            ),
-            const SizedBox(height: 15),
-            TextFormField(
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              controller: revenue,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Field can not be empty';
-                }
-                if (double.tryParse(value) == null) {
-                  return 'Please enter a valid number';
-                }
-                return null;
-              },
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Revenue',
-                suffixIcon: IconButton(
-                  onPressed: revenue.clear,
-                  icon: const Icon(Icons.clear),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    final revenues =
-                        Revenue(const Uuid().v4(), double.parse(revenue.text));
-
-                    revenueModel.addRevenue(revenues);
-
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: Colors.tealAccent[400],
+      body: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 40,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  height: 35,
+                  width: 90,
+                  decoration: BoxDecoration(
+                      color: Colors.grey[800],
+                      borderRadius: BorderRadius.circular(10)),
+                  child: TextButton(
+                    onPressed: () {
+                      _showExpenseScreen(context);
+                    },
+                    child: const Text(
+                      'Expenses',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                  child: const Text(
-                    'Save',
-                    style: TextStyle(color: Colors.white),
+                ),
+                Container(
+                  height: 35,
+                  width: 90,
+                  decoration: BoxDecoration(
+                      color: Colors.grey[600],
+                      borderRadius: BorderRadius.circular(10)),
+                  child: TextButton(
+                    onPressed: () {},
+                    child: const Text(
+                      'Income',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
-            )
-          ],
-        ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showExpenseScreen(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (BuildContext context) {
+          return ExpensesScreen();
+        },
       ),
     );
   }
