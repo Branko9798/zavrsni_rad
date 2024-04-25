@@ -9,6 +9,7 @@ import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_category.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zavrsni_rad/revenues_expenses/expenses/expenses.dart';
 import 'package:zavrsni_rad/revenues_expenses/revnues/revenues_screen.dart';
 
 class ExpensesScreen extends StatefulWidget {
@@ -40,7 +41,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +54,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         ),
         centerTitle: true,
         backgroundColor: Colors.tealAccent[400],
+        actions: [
+          TextButton(
+              onPressed: () {
+                final expense = Expense(const Uuid().v4(), note.text,
+                    double.parse(expensesValue.text));
+                expenseModel.addExpense(expense);
+              },
+              child: const Text('SAVE'))
+        ],
       ),
       body: Column(
         children: [
@@ -97,10 +106,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           ),
           Expanded(
             child: GridView.builder(
-              itemCount: categories.length,
+              itemCount: ExpenseCategory.categories.length,
               padding: const EdgeInsets.symmetric(vertical: 20),
               itemBuilder: (context, index) {
-                final category = categories[index];
+                final category = ExpenseCategory.categories[index];
 
                 return Column(
                   children: [

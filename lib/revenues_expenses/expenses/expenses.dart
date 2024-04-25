@@ -3,16 +3,16 @@ import 'package:zavrsni_rad/database/database.dart';
 
 class Expense implements Insertable<Expense> {
   final String id;
-  final String expenseName;
+  final String expenseNote;
   final double expenseValue;
 
-  Expense(this.id, this.expenseName, this.expenseValue);
+  Expense(this.id, this.expenseNote, this.expenseValue);
 
   @override
   Map<String, Expression<Object>> toColumns(bool nullToAbsent) {
     return ExpensesTableCompanion(
       id: Value(id),
-      expenseName: Value(expenseName),
+      expenseName: Value(expenseNote),
       expenseValue: Value(expenseValue),
     ).toColumns(nullToAbsent);
   }

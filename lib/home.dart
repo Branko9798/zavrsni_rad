@@ -24,7 +24,7 @@ class Home extends StatelessWidget {
           builder: (context, snapshot) {
             return ListView.builder(
               itemBuilder: (context, index) {
-                return Text(snapshot.data![index].expense.toString());
+                return Text(snapshot.data![index].toString());
               },
               itemCount: snapshot.data?.length ?? 0,
             );

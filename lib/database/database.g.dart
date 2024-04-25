@@ -195,8 +195,6 @@ class $ExpensesTableTable extends ExpensesTable
       attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}expense_name'])!,
-      attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}expense_value'])!,
     );
   }
