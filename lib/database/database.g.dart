@@ -138,11 +138,11 @@ class $ExpensesTableTable extends ExpensesTable
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
       'id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _expenseNameMeta =
-      const VerificationMeta('expenseName');
+  static const VerificationMeta _expenseNoteMeta =
+      const VerificationMeta('expenseNote');
   @override
-  late final GeneratedColumn<String> expenseName = GeneratedColumn<String>(
-      'expense_name', aliasedName, false,
+  late final GeneratedColumn<String> expenseNote = GeneratedColumn<String>(
+      'expense_note', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _expenseValueMeta =
       const VerificationMeta('expenseValue');
@@ -150,8 +150,20 @@ class $ExpensesTableTable extends ExpensesTable
   late final GeneratedColumn<double> expenseValue = GeneratedColumn<double>(
       'expense_value', aliasedName, false,
       type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _iconIdMeta = const VerificationMeta('iconId');
   @override
-  List<GeneratedColumn> get $columns => [id, expenseName, expenseValue];
+  late final GeneratedColumn<String> iconId = GeneratedColumn<String>(
+      'icon_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _iconNameMeta =
+      const VerificationMeta('iconName');
+  @override
+  late final GeneratedColumn<String> iconName = GeneratedColumn<String>(
+      'icon_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, expenseNote, expenseValue, iconId, iconName];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -167,13 +179,13 @@ class $ExpensesTableTable extends ExpensesTable
     } else if (isInserting) {
       context.missing(_idMeta);
     }
-    if (data.containsKey('expense_name')) {
+    if (data.containsKey('expense_note')) {
       context.handle(
-          _expenseNameMeta,
-          expenseName.isAcceptableOrUnknown(
-              data['expense_name']!, _expenseNameMeta));
+          _expenseNoteMeta,
+          expenseNote.isAcceptableOrUnknown(
+              data['expense_note']!, _expenseNoteMeta));
     } else if (isInserting) {
-      context.missing(_expenseNameMeta);
+      context.missing(_expenseNoteMeta);
     }
     if (data.containsKey('expense_value')) {
       context.handle(
@@ -182,6 +194,18 @@ class $ExpensesTableTable extends ExpensesTable
               data['expense_value']!, _expenseValueMeta));
     } else if (isInserting) {
       context.missing(_expenseValueMeta);
+    }
+    if (data.containsKey('icon_id')) {
+      context.handle(_iconIdMeta,
+          iconId.isAcceptableOrUnknown(data['icon_id']!, _iconIdMeta));
+    } else if (isInserting) {
+      context.missing(_iconIdMeta);
+    }
+    if (data.containsKey('icon_name')) {
+      context.handle(_iconNameMeta,
+          iconName.isAcceptableOrUnknown(data['icon_name']!, _iconNameMeta));
+    } else if (isInserting) {
+      context.missing(_iconNameMeta);
     }
     return context;
   }
@@ -195,7 +219,13 @@ class $ExpensesTableTable extends ExpensesTable
       attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}expense_note'])!,
+      attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}expense_value'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}icon_id'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}icon_name'])!,
     );
   }
 
@@ -207,46 +237,62 @@ class $ExpensesTableTable extends ExpensesTable
 
 class ExpensesTableCompanion extends UpdateCompanion<Expense> {
   final Value<String> id;
-  final Value<String> expenseName;
+  final Value<String> expenseNote;
   final Value<double> expenseValue;
+  final Value<String> iconId;
+  final Value<String> iconName;
   final Value<int> rowid;
   const ExpensesTableCompanion({
     this.id = const Value.absent(),
-    this.expenseName = const Value.absent(),
+    this.expenseNote = const Value.absent(),
     this.expenseValue = const Value.absent(),
+    this.iconId = const Value.absent(),
+    this.iconName = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ExpensesTableCompanion.insert({
     required String id,
-    required String expenseName,
+    required String expenseNote,
     required double expenseValue,
+    required String iconId,
+    required String iconName,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
-        expenseName = Value(expenseName),
-        expenseValue = Value(expenseValue);
+        expenseNote = Value(expenseNote),
+        expenseValue = Value(expenseValue),
+        iconId = Value(iconId),
+        iconName = Value(iconName);
   static Insertable<Expense> custom({
     Expression<String>? id,
-    Expression<String>? expenseName,
+    Expression<String>? expenseNote,
     Expression<double>? expenseValue,
+    Expression<String>? iconId,
+    Expression<String>? iconName,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (expenseName != null) 'expense_name': expenseName,
+      if (expenseNote != null) 'expense_note': expenseNote,
       if (expenseValue != null) 'expense_value': expenseValue,
+      if (iconId != null) 'icon_id': iconId,
+      if (iconName != null) 'icon_name': iconName,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
   ExpensesTableCompanion copyWith(
       {Value<String>? id,
-      Value<String>? expenseName,
+      Value<String>? expenseNote,
       Value<double>? expenseValue,
+      Value<String>? iconId,
+      Value<String>? iconName,
       Value<int>? rowid}) {
     return ExpensesTableCompanion(
       id: id ?? this.id,
-      expenseName: expenseName ?? this.expenseName,
+      expenseNote: expenseNote ?? this.expenseNote,
       expenseValue: expenseValue ?? this.expenseValue,
+      iconId: iconId ?? this.iconId,
+      iconName: iconName ?? this.iconName,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -257,11 +303,17 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
-    if (expenseName.present) {
-      map['expense_name'] = Variable<String>(expenseName.value);
+    if (expenseNote.present) {
+      map['expense_note'] = Variable<String>(expenseNote.value);
     }
     if (expenseValue.present) {
       map['expense_value'] = Variable<double>(expenseValue.value);
+    }
+    if (iconId.present) {
+      map['icon_id'] = Variable<String>(iconId.value);
+    }
+    if (iconName.present) {
+      map['icon_name'] = Variable<String>(iconName.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -273,8 +325,10 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
   String toString() {
     return (StringBuffer('ExpensesTableCompanion(')
           ..write('id: $id, ')
-          ..write('expenseName: $expenseName, ')
+          ..write('expenseNote: $expenseNote, ')
           ..write('expenseValue: $expenseValue, ')
+          ..write('iconId: $iconId, ')
+          ..write('iconName: $iconName, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

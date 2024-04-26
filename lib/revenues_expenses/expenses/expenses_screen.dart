@@ -1,9 +1,5 @@
-import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:uuid/uuid.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_category.dart';
@@ -20,11 +16,12 @@ class ExpensesScreen extends StatefulWidget {
 }
 
 class _ExpensesScreenState extends State<ExpensesScreen> {
-  final expense = TextEditingController();
-
   final expenseModel = getIt<ExpensesModel>();
 
   int? selectedIndex;
+
+  String? selectedIconId;
+  String? selectedIconName;
 
   double boxHeight = 0;
   final note = TextEditingController();
@@ -57,9 +54,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         actions: [
           TextButton(
               onPressed: () {
-                final expense = Expense(const Uuid().v4(), note.text,
-                    double.parse(expensesValue.text));
-                expenseModel.addExpense(expense);
+                final expenseDb = Expense(
+                  const Uuid().v4(),
+                  note.text,
+                  double.parse(expensesValue.text),
+                  selectedIconId.toString(),
+                  selectedIconName.toString(),
+                );
+                expenseModel.addExpense(expenseDb);
+                Navigator.pop(context);
               },
               child: const Text('SAVE'))
         ],
@@ -126,8 +129,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               setState(() {
                                 if (selectedIndex == index) {
                                   selectedIndex = null;
+                                  selectedIconId = null;
+                                  selectedIconName = null;
                                 } else {
                                   selectedIndex = index;
+                                  selectedIconId = category.id;
+                                  selectedIconName = category.name;
                                 }
                                 changeAnimatedContainer();
                               });

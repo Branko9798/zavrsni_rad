@@ -71,6 +71,9 @@ class RevenuesScreen extends StatelessWidget {
               ],
             ),
           ),
+          Column(children: <Widget>[
+            GridView.builder(gridDelegate: gridDelegate, itemBuilder: itemBuilder)
+          ],)
         ],
       ),
     );

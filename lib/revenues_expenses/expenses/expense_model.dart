@@ -11,6 +11,12 @@ class ExpensesModel {
 
   Stream<List<Expense>> get allExpensesStream => db.expensesTable.all().watch();
 
+  Stream<List<Expense>> filteredStream(String categoryID) {
+    return allExpensesStream.map((expenses) => expenses
+        .where((element) => element.category?.id == categoryID)
+        .toList());
+  }
+
   void addExpense(Expense expense) async {
     var newValue = expenses.value..add(expense);
     await db.expensesTable.insert().insert(expense);

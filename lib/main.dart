@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
         body: PageView(
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
-          children: const [Home(), NotificationScreen(), UserScreen()],
+          children: [Home(), const NotificationScreen(), const UserScreen()],
           onPageChanged: (index) {
             setState(() {
               myIndex = index;
