@@ -6,7 +6,7 @@ import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_category.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expenses_screen.dart';
-import 'package:zavrsni_rad/revenues_expenses/revnues/revenues_screen.dart';
+import 'package:zavrsni_rad/revenues_expenses/incomes/income_screen.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});
@@ -112,22 +112,22 @@ class Home extends StatelessWidget {
                 Icons.attach_money_outlined,
                 size: 35,
               ),
-              label: 'Revenues',
+              label: 'Incomes',
               elevation: 5,
               onTap: () {
-                _showRevenueScreen(context);
+                _showIncomeScreen(context);
               },
             ),
           ],
         ));
   }
 
-  void _showRevenueScreen(BuildContext context) {
+  void _showIncomeScreen(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         fullscreenDialog: true,
         builder: (BuildContext context) {
-          return RevenuesScreen();
+          return IncomeScreen();
         },
       ),
     );

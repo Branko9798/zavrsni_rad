@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:zavrsni_rad/main.dart';
@@ -6,7 +5,7 @@ import 'package:zavrsni_rad/revenues_expenses/expenses/expense_category.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expenses.dart';
-import 'package:zavrsni_rad/revenues_expenses/revnues/revenues_screen.dart';
+import 'package:zavrsni_rad/revenues_expenses/incomes/income_screen.dart';
 
 class ExpensesScreen extends StatefulWidget {
   ExpensesScreen({super.key});
@@ -59,7 +58,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   note.text,
                   double.parse(expensesValue.text),
                   selectedIconId.toString(),
-                  selectedIconName.toString(),
                 );
                 expenseModel.addExpense(expenseDb);
                 Navigator.pop(context);
@@ -112,7 +110,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               itemCount: ExpenseCategory.categories.length,
               padding: const EdgeInsets.symmetric(vertical: 20),
               itemBuilder: (context, index) {
-                final category = ExpenseCategory.categories[index];
+                final expenseCategory = ExpenseCategory.categories[index];
 
                 return Column(
                   children: [
@@ -133,16 +131,16 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                                   selectedIconName = null;
                                 } else {
                                   selectedIndex = index;
-                                  selectedIconId = category.id;
-                                  selectedIconName = category.name;
+                                  selectedIconId = expenseCategory.id;
+                                  selectedIconName = expenseCategory.name;
                                 }
                                 changeAnimatedContainer();
                               });
                             },
                             icon: FaIcon(
-                              category.icon,
+                              expenseCategory.icon,
                             ))),
-                    Text(category.name),
+                    Text(expenseCategory.name),
                   ],
                 );
               },
@@ -198,7 +196,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -209,7 +207,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       MaterialPageRoute<void>(
         fullscreenDialog: true,
         builder: (BuildContext context) {
-          return RevenuesScreen();
+          return IncomeScreen();
         },
       ),
     );

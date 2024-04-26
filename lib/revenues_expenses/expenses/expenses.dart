@@ -6,13 +6,13 @@ class Expense implements Insertable<Expense> {
   final String id;
   final String expenseNote;
   final double expenseValue;
-  final String iconId; // TODO: rename to category ID
-  final String iconName; // TODO: remove
+  final String expensesCategoryId; 
+        
 
-  ExpenseCategory? get category => ExpenseCategory.findCategoryId(iconId);
+  ExpenseCategory? get category => ExpenseCategory.findCategoryId(expensesCategoryId);
 
   Expense(
-      this.id, this.expenseNote, this.expenseValue, this.iconId, this.iconName);
+      this.id, this.expenseNote, this.expenseValue, this.expensesCategoryId, );
 
   @override
   Map<String, Expression<Object>> toColumns(bool nullToAbsent) {
@@ -20,8 +20,8 @@ class Expense implements Insertable<Expense> {
       id: Value(id),
       expenseNote: Value(expenseNote),
       expenseValue: Value(expenseValue),
-      iconId: Value(iconId),
-      iconName: Value(iconName),
+      expensesCategoryId: Value(expensesCategoryId),
+    
     ).toColumns(nullToAbsent);
   }
 }
@@ -31,8 +31,8 @@ class ExpensesTable extends Table {
   TextColumn get id => text()();
   TextColumn get expenseNote => text()();
   RealColumn get expenseValue => real()();
-  TextColumn get iconId => text()();
-  TextColumn get iconName => text()();
+  TextColumn get expensesCategoryId => text()();
+
 
   @override
   Set<Column> get primaryKey => {id};
