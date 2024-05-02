@@ -11,10 +11,10 @@ class ExpensesModel {
 
   Stream<List<Expense>> get allExpensesStream => db.expensesTable.all().watch();
 
-  Stream<List<Expense>> filteredStream(String categoryID) {
-    return allExpensesStream.map((expenses) => expenses
-        .where((element) => element.category?.id == categoryID)
-        .toList());
+  Stream<List<Expense>> filteredExpenses(List<String> categories) {
+    return (db.expensesTable.select()
+          ..where((tbl) => tbl.expensesCategoryId.isIn(categories)))
+        .watch();
   }
 
   void addExpense(Expense expense) async {

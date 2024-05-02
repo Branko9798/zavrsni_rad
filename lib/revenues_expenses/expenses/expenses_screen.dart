@@ -167,6 +167,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                       children: <Widget>[
                         TextFormField(
                           controller: note,
+                          textInputAction: TextInputAction.go,
+                          onFieldSubmitted: (value) {
+                            saveButton();
+                            Navigator.pop(context);
+                          },
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
                             labelText: 'Note: ',
@@ -180,6 +185,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         TextFormField(
                           controller: expensesValue,
                           focusNode: valueFocusNode,
+                          textInputAction: TextInputAction.go,
+                          onFieldSubmitted: (value) {
+                            saveButton();
+                            Navigator.pop(context);
+                          },
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
@@ -211,5 +221,16 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         },
       ),
     );
+  }
+
+  void saveButton() {
+    final expenseDb = Expense(
+      const Uuid().v4(),
+      note.text,
+      double.parse(expensesValue.text),
+      selectedIconId.toString(),
+    );
+    expenseModel.addExpense(expenseDb);
+    Navigator.pop(context);
   }
 }

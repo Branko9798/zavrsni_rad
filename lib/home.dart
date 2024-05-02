@@ -52,8 +52,6 @@ class _HomeState extends State<Home> {
                       alignment: Alignment.center,
                       children: [
                         Container(
-                          height: 84,
-                          width: 390,
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: image != null
@@ -103,10 +101,17 @@ class _HomeState extends State<Home> {
                         title: Text(incomeCategory.name),
                         onTap: () {
                           setState(() {
-                            selectedCategory = incomeCategory.id;
+                            if (selectedCategory == incomeCategory.id) {
+                              selectedCategory = null;
+                            } else {
+                              selectedCategory = incomeCategory.id;
+                            }
                           });
                           Navigator.of(context).pop();
                         },
+                        tileColor: selectedCategory == incomeCategory.id
+                            ? Colors.grey.withOpacity(0.3)
+                            : null,
                       ),
                   ],
                 ),
@@ -118,11 +123,15 @@ class _HomeState extends State<Home> {
                         title: Text(expensesCategory.name),
                         onTap: () {
                           setState(() {
-                            selectedCategory = expensesCategory.id;
+                            if (selectedCategory == expensesCategory.id) {
+                              selectedCategory = null;
+                            } else {
+                              selectedCategory = expensesCategory.id;
+                            }
                           });
                           Navigator.of(context).pop();
                         },
-                        tileColor: categoryFilter.value == expensesCategory.id
+                        tileColor: selectedCategory == expensesCategory.id
                             ? Colors.grey.withOpacity(0.3)
                             : null,
                       ),
@@ -229,7 +238,10 @@ class _HomeState extends State<Home> {
                     },
                   ),
                   StreamBuilder(
-                    stream: getIt<ExpensesModel>().allExpensesStream,
+                    stream: selectedCategory == null
+                        ? getIt<ExpensesModel>().allExpensesStream
+                        : getIt<ExpensesModel>()
+                            .filteredExpenses([selectedCategory!]),
                     builder: (context, snapshot) {
                       return ListView.builder(
                         itemBuilder: (context, index) {
