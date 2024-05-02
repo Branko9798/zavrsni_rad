@@ -3,6 +3,7 @@ import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/home.dart';
 import 'package:zavrsni_rad/notifications_screen.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
+import 'package:zavrsni_rad/revenues_expenses/incomes/income_category.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_model.dart';
 
 import 'package:get_it/get_it.dart';
