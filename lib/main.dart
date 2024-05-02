@@ -17,6 +17,7 @@ void main() {
   getIt.registerSingleton<AppDatabase>(AppDatabase());
   getIt.registerSingleton<IncomeModel>(IncomeModel());
   getIt.registerSingleton<ExpensesModel>(ExpensesModel());
+  
 
   runApp(const MyApp());
 }

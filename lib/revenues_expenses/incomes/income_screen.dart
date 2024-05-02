@@ -199,15 +199,15 @@ class _IncomeScreenState extends State<IncomeScreen> {
   }
 
   void _showExpenseScreen(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        fullscreenDialog: true,
-        builder: (BuildContext context) {
-          return ExpensesScreen();
-        },
-      ),
-    );
-  }
+  Navigator.of(context).pushReplacement(
+    PageRouteBuilder<void>(
+      pageBuilder: (context, animation1, animation2) {
+        return ExpensesScreen();
+      },
+      transitionDuration: Duration.zero, 
+    ),
+  );
+}
 
   void saveButton() {
     final incomeDb = Income(const Uuid().v4(), note.text,

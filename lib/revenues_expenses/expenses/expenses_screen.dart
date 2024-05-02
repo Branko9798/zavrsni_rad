@@ -94,7 +94,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                       borderRadius: BorderRadius.circular(10)),
                   child: TextButton(
                     onPressed: () {
-                      _showRevenueScreen(context);
+                      _showIncomeScreen(context);
                     },
                     child: const Text(
                       'Income',
@@ -212,13 +212,13 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
   }
 
-  void _showRevenueScreen(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        fullscreenDialog: true,
-        builder: (BuildContext context) {
+  void _showIncomeScreen(BuildContext context) {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder<void>(
+        pageBuilder: (context, animation1, animation2) {
           return IncomeScreen();
         },
+        transitionDuration: Duration.zero,
       ),
     );
   }

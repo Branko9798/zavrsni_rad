@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:insta_image_viewer/insta_image_viewer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -46,45 +48,42 @@ class _HomeState extends State<Home> {
             padding: const EdgeInsets.all(15.0),
             child: ListView(
               children: [
-                DrawerHeader(
-                  child: CircleAvatar(
-                    child: Stack(
-                      alignment: Alignment.center,
+                Container(
+                  height: 200,
+                  child: DrawerHeader(
+                    child: Column(
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: image != null
-                                  ? FileImage(image!)
-                                  : const AssetImage(
-                                          'path_to_placeholder_image')
-                                      as ImageProvider,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            setState(pickImage);
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Icon(
-                                Icons.add_a_photo,
-                                color: Colors.blue,
+                        Center(
+                          child: Stack(
+                            children: [
+                              InstaImageViewer(
+                                backgroundIsTransparent: true,
+                                disposeLevel: DisposeLevel.high,
+                                backgroundColor: Colors.grey,
+                                child: CircleAvatar(
+                                  radius: 65,
+                                  backgroundImage: (image != null)
+                                      ? FileImage(image!)
+                                      : const NetworkImage(
+                                              'path_to_placeholder_image')
+                                          as ImageProvider,
+                                ),
                               ),
-                              SizedBox(width: 15),
-                              Text(
-                                'Load photo',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  decoration: TextDecoration.underline,
+                              Positioned(
+                                bottom: -5,
+                                left: 80,
+                                child: IconButton(
+                                  onPressed: () {
+                                    pickImage();
+                                  },
+                                  icon: const Icon(Icons.add_a_photo),
                                 ),
                               ),
                             ],
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        const Text('Branko')
                       ],
                     ),
                   ),
