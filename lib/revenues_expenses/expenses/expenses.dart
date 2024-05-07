@@ -6,13 +6,19 @@ class Expense implements Insertable<Expense> {
   final String id;
   final String expenseNote;
   final double expenseValue;
-  final String expensesCategoryId; 
-        
+  final String expensesCategoryId;
+  final DateTime date;
 
-  ExpenseCategory? get category => ExpenseCategory.findCategoryId(expensesCategoryId);
+  ExpenseCategory? get category =>
+      ExpenseCategory.findCategoryId(expensesCategoryId);
 
   Expense(
-      this.id, this.expenseNote, this.expenseValue, this.expensesCategoryId, );
+    this.id,
+    this.expenseNote,
+    this.expenseValue,
+    this.expensesCategoryId,
+    this.date,
+  );
 
   @override
   Map<String, Expression<Object>> toColumns(bool nullToAbsent) {
@@ -21,7 +27,7 @@ class Expense implements Insertable<Expense> {
       expenseNote: Value(expenseNote),
       expenseValue: Value(expenseValue),
       expensesCategoryId: Value(expensesCategoryId),
-    
+      date: Value(date),
     ).toColumns(nullToAbsent);
   }
 }
@@ -32,7 +38,7 @@ class ExpensesTable extends Table {
   TextColumn get expenseNote => text()();
   RealColumn get expenseValue => real()();
   TextColumn get expensesCategoryId => text()();
-
+  DateTimeColumn get date => dateTime().withDefault(currentDate)();
 
   @override
   Set<Column> get primaryKey => {id};

@@ -32,9 +32,16 @@ class $IncomesTableTable extends IncomesTable
   late final GeneratedColumn<String> incomeCategoryId = GeneratedColumn<String>(
       'income_category_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+      'date', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDate);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, incomeNote, incomeValue, incomeCategoryId];
+      [id, incomeNote, incomeValue, incomeCategoryId, date];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -74,6 +81,10 @@ class $IncomesTableTable extends IncomesTable
     } else if (isInserting) {
       context.missing(_incomeCategoryIdMeta);
     }
+    if (data.containsKey('date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    }
     return context;
   }
 
@@ -91,6 +102,8 @@ class $IncomesTableTable extends IncomesTable
           .read(DriftSqlType.double, data['${effectivePrefix}income_value'])!,
       attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}income_category_id'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
     );
   }
 
@@ -105,12 +118,14 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
   final Value<String> incomeNote;
   final Value<double> incomeValue;
   final Value<String> incomeCategoryId;
+  final Value<DateTime> date;
   final Value<int> rowid;
   const IncomesTableCompanion({
     this.id = const Value.absent(),
     this.incomeNote = const Value.absent(),
     this.incomeValue = const Value.absent(),
     this.incomeCategoryId = const Value.absent(),
+    this.date = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   IncomesTableCompanion.insert({
@@ -118,6 +133,7 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
     required String incomeNote,
     required double incomeValue,
     required String incomeCategoryId,
+    this.date = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         incomeNote = Value(incomeNote),
@@ -128,6 +144,7 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
     Expression<String>? incomeNote,
     Expression<double>? incomeValue,
     Expression<String>? incomeCategoryId,
+    Expression<DateTime>? date,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -135,6 +152,7 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
       if (incomeNote != null) 'income_note': incomeNote,
       if (incomeValue != null) 'income_value': incomeValue,
       if (incomeCategoryId != null) 'income_category_id': incomeCategoryId,
+      if (date != null) 'date': date,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -144,12 +162,14 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
       Value<String>? incomeNote,
       Value<double>? incomeValue,
       Value<String>? incomeCategoryId,
+      Value<DateTime>? date,
       Value<int>? rowid}) {
     return IncomesTableCompanion(
       id: id ?? this.id,
       incomeNote: incomeNote ?? this.incomeNote,
       incomeValue: incomeValue ?? this.incomeValue,
       incomeCategoryId: incomeCategoryId ?? this.incomeCategoryId,
+      date: date ?? this.date,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -169,6 +189,9 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
     if (incomeCategoryId.present) {
       map['income_category_id'] = Variable<String>(incomeCategoryId.value);
     }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -182,6 +205,7 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
           ..write('incomeNote: $incomeNote, ')
           ..write('incomeValue: $incomeValue, ')
           ..write('incomeCategoryId: $incomeCategoryId, ')
+          ..write('date: $date, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -217,9 +241,16 @@ class $ExpensesTableTable extends ExpensesTable
   late final GeneratedColumn<String> expensesCategoryId =
       GeneratedColumn<String>('expenses_category_id', aliasedName, false,
           type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+      'date', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDate);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, expenseNote, expenseValue, expensesCategoryId];
+      [id, expenseNote, expenseValue, expensesCategoryId, date];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -259,6 +290,10 @@ class $ExpensesTableTable extends ExpensesTable
     } else if (isInserting) {
       context.missing(_expensesCategoryIdMeta);
     }
+    if (data.containsKey('date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    }
     return context;
   }
 
@@ -276,6 +311,8 @@ class $ExpensesTableTable extends ExpensesTable
           .read(DriftSqlType.double, data['${effectivePrefix}expense_value'])!,
       attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}expenses_category_id'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
     );
   }
 
@@ -290,12 +327,14 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
   final Value<String> expenseNote;
   final Value<double> expenseValue;
   final Value<String> expensesCategoryId;
+  final Value<DateTime> date;
   final Value<int> rowid;
   const ExpensesTableCompanion({
     this.id = const Value.absent(),
     this.expenseNote = const Value.absent(),
     this.expenseValue = const Value.absent(),
     this.expensesCategoryId = const Value.absent(),
+    this.date = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ExpensesTableCompanion.insert({
@@ -303,6 +342,7 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
     required String expenseNote,
     required double expenseValue,
     required String expensesCategoryId,
+    this.date = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         expenseNote = Value(expenseNote),
@@ -313,6 +353,7 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
     Expression<String>? expenseNote,
     Expression<double>? expenseValue,
     Expression<String>? expensesCategoryId,
+    Expression<DateTime>? date,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -321,6 +362,7 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
       if (expenseValue != null) 'expense_value': expenseValue,
       if (expensesCategoryId != null)
         'expenses_category_id': expensesCategoryId,
+      if (date != null) 'date': date,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -330,12 +372,14 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
       Value<String>? expenseNote,
       Value<double>? expenseValue,
       Value<String>? expensesCategoryId,
+      Value<DateTime>? date,
       Value<int>? rowid}) {
     return ExpensesTableCompanion(
       id: id ?? this.id,
       expenseNote: expenseNote ?? this.expenseNote,
       expenseValue: expenseValue ?? this.expenseValue,
       expensesCategoryId: expensesCategoryId ?? this.expensesCategoryId,
+      date: date ?? this.date,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -355,6 +399,9 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
     if (expensesCategoryId.present) {
       map['expenses_category_id'] = Variable<String>(expensesCategoryId.value);
     }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -368,6 +415,7 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
           ..write('expenseNote: $expenseNote, ')
           ..write('expenseValue: $expenseValue, ')
           ..write('expensesCategoryId: $expensesCategoryId, ')
+          ..write('date: $date, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

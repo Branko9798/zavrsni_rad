@@ -43,6 +43,7 @@ dependencies:
   shared_preferences: ^2.2.3
   insta_image_viewer: ^1.0.4
   flutter_bcrypt: ^1.0.8
+  fl_chart: ^0.67.0
 
 
 dev_dependencies:

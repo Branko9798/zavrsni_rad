@@ -199,19 +199,24 @@ class _IncomeScreenState extends State<IncomeScreen> {
   }
 
   void _showExpenseScreen(BuildContext context) {
-  Navigator.of(context).pushReplacement(
-    PageRouteBuilder<void>(
-      pageBuilder: (context, animation1, animation2) {
-        return ExpensesScreen();
-      },
-      transitionDuration: Duration.zero, 
-    ),
-  );
-}
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder<void>(
+        pageBuilder: (context, animation1, animation2) {
+          return ExpensesScreen();
+        },
+        transitionDuration: Duration.zero,
+      ),
+    );
+  }
 
   void saveButton() {
-    final incomeDb = Income(const Uuid().v4(), note.text,
-        double.parse(incomeValue.text), selectedIconId.toString());
+    final incomeDb = Income(
+      const Uuid().v4(),
+      note.text,
+      double.parse(incomeValue.text),
+      selectedIconId.toString(),
+      DateTime.now(),
+    );
     incomeModel.addIncome(incomeDb);
   }
 }

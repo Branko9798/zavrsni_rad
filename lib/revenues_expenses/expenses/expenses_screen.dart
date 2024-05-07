@@ -50,20 +50,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         ),
         centerTitle: true,
         backgroundColor: Colors.tealAccent[400],
-        actions: [
-          TextButton(
-              onPressed: () {
-                final expenseDb = Expense(
-                  const Uuid().v4(),
-                  note.text,
-                  double.parse(expensesValue.text),
-                  selectedIconId.toString(),
-                );
-                expenseModel.addExpense(expenseDb);
-                Navigator.pop(context);
-              },
-              child: const Text('SAVE'))
-        ],
       ),
       body: Column(
         children: [
@@ -170,7 +156,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                           textInputAction: TextInputAction.go,
                           onFieldSubmitted: (value) {
                             saveButton();
-                            Navigator.pop(context);
                           },
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
@@ -188,7 +173,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                           textInputAction: TextInputAction.go,
                           onFieldSubmitted: (value) {
                             saveButton();
-                            Navigator.pop(context);
                           },
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
@@ -229,6 +213,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       note.text,
       double.parse(expensesValue.text),
       selectedIconId.toString(),
+      DateTime.now(),
     );
     expenseModel.addExpense(expenseDb);
     Navigator.pop(context);

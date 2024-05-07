@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/home.dart';
-import 'package:zavrsni_rad/notifications_screen.dart';
+import 'package:zavrsni_rad/statistics_screen.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_category.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_model.dart';
@@ -17,7 +17,6 @@ void main() {
   getIt.registerSingleton<AppDatabase>(AppDatabase());
   getIt.registerSingleton<IncomeModel>(IncomeModel());
   getIt.registerSingleton<ExpensesModel>(ExpensesModel());
-  
 
   runApp(const MyApp());
 }
@@ -55,7 +54,7 @@ class _MyAppState extends State<MyApp> {
         body: PageView(
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
-          children: [Home(), const NotificationScreen(), const UserScreen()],
+          children: [Home(), const StatisticsScreen(), const UserScreen()],
           onPageChanged: (index) {
             setState(() {
               myIndex = index;

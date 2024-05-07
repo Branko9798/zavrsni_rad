@@ -7,10 +7,13 @@ class Income implements Insertable<Income> {
   final String incomeNote;
   final double incomeValue;
   final String incomeCategoryId;
+  final DateTime date;
 
-  IncomeCategory? get category => IncomeCategory.findCategoryId(incomeCategoryId);
+  IncomeCategory? get category =>
+      IncomeCategory.findCategoryId(incomeCategoryId);
 
-  Income(this.id, this.incomeNote, this.incomeValue, this.incomeCategoryId);
+  Income(this.id, this.incomeNote, this.incomeValue, this.incomeCategoryId,
+      this.date);
 
   @override
   Map<String, Expression<Object>> toColumns(bool nullToAbsent) {
@@ -19,6 +22,7 @@ class Income implements Insertable<Income> {
       incomeNote: Value(incomeNote),
       incomeValue: Value(incomeValue),
       incomeCategoryId: Value(incomeCategoryId),
+      date: Value(date),
     ).toColumns(nullToAbsent);
   }
 }
@@ -29,7 +33,7 @@ class IncomesTable extends Table {
   TextColumn get incomeNote => text()();
   RealColumn get incomeValue => real()();
   TextColumn get incomeCategoryId => text()();
-
+  DateTimeColumn get date => dateTime().withDefault(currentDate)();
 
   @override
   Set<Column> get primaryKey => {id};

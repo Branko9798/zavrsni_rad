@@ -164,141 +164,179 @@ class _HomeState extends State<Home> {
               ),
             ),
             Expanded(
-              child: GridView(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                ),
+              child: Row(
                 children: [
-                  StreamBuilder(
-                    stream: selectedCategory == null
-                        ? getIt<IncomeModel>().allIncomesStream
-                        : getIt<IncomeModel>()
-                            .filteredIncomes([selectedCategory!]),
-                    builder: (context, snapshot) {
-                      return ListView.builder(
-                        itemBuilder: (context, index) {
-                          if (!snapshot.hasData) {
-                            return const CircularProgressIndicator();
-                          }
+                  Expanded(
+                    child: StreamBuilder(
+                      stream: selectedCategory == null
+                          ? getIt<IncomeModel>().allIncomesStream
+                          : getIt<IncomeModel>()
+                              .filteredIncomes([selectedCategory!]),
+                      builder: (context, snapshot) {
+                        return ListView.builder(
+                          itemBuilder: (context, index) {
+                            if (!snapshot.hasData) {
+                              return const CircularProgressIndicator();
+                            }
 
-                          final income = snapshot.data![index];
+                            final income = snapshot.data![index];
 
-                          return Card(
-                            color: Colors.tealAccent[200],
-                            child: InkWell(
-                              onLongPress: () {},
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                            return Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.calendar_today,
+                                        color: Colors.grey, size: 16),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "${income.date.day}/${income.date.month}/${income.date.year}",
+                                      style:
+                                          const TextStyle(color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                                Card(
+                                  color: Colors.tealAccent[200],
+                                  child: InkWell(
+                                    onLongPress: () {},
+                                    child: Row(
                                       children: [
-                                        Text(
-                                          income.incomeNote,
-                                          style: const TextStyle(
-                                            fontSize: 16,
+                                        Expanded(
+                                          flex: 2,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                income.incomeNote,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                '+${income.incomeValue} €',
+                                                style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 13,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
                                           ),
-                                          textAlign: TextAlign.center,
                                         ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          '+${income.incomeValue} €',
-                                          style: const TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 13,
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                topRight: Radius.circular(15),
+                                                bottomRight:
+                                                    Radius.circular(15),
+                                              ),
+                                            ),
+                                            child: Center(
+                                                child: FaIcon(
+                                                    income.category!.icon)),
                                           ),
-                                          textAlign: TextAlign.center,
                                         ),
                                       ],
                                     ),
                                   ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        borderRadius: BorderRadius.only(
-                                          topRight: Radius.circular(15),
-                                          bottomRight: Radius.circular(15),
-                                        ),
-                                      ),
-                                      child: Center(
-                                          child: FaIcon(income.category!.icon)),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                        itemCount: snapshot.data?.length ?? 0,
-                      );
-                    },
+                                ),
+                              ],
+                            );
+                          },
+                          itemCount: snapshot.data?.length ?? 0,
+                        );
+                      },
+                    ),
                   ),
-                  StreamBuilder(
-                    stream: selectedCategory == null
-                        ? getIt<ExpensesModel>().allExpensesStream
-                        : getIt<ExpensesModel>()
-                            .filteredExpenses([selectedCategory!]),
-                    builder: (context, snapshot) {
-                      return ListView.builder(
-                        itemBuilder: (context, index) {
-                          final expense = snapshot.data![index];
+                  Expanded(
+                    child: StreamBuilder(
+                      stream: selectedCategory == null
+                          ? getIt<ExpensesModel>().allExpensesStream
+                          : getIt<ExpensesModel>()
+                              .filteredExpenses([selectedCategory!]),
+                      builder: (context, snapshot) {
+                        return ListView.builder(
+                          itemBuilder: (context, index) {
+                            final expense = snapshot.data![index];
 
-                          return Card(
-                            color: Colors.red[100],
-                            child: InkWell(
-                              onLongPress: () {},
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                            return Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.calendar_today,
+                                        color: Colors.grey, size: 16),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "${expense.date.day}/${expense.date.month}/${expense.date.year}",
+                                      style:
+                                          const TextStyle(color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                                Card(
+                                  color: Colors.red[100],
+                                  child: InkWell(
+                                    onLongPress: () {},
+                                    child: Row(
                                       children: [
-                                        Text(
-                                          expense.expenseNote,
-                                          style: const TextStyle(
-                                            fontSize: 16,
+                                        Expanded(
+                                          flex: 2,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                expense.expenseNote,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                '-${expense.expenseValue} €',
+                                                style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 13,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
                                           ),
-                                          textAlign: TextAlign.center,
                                         ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          '-${expense.expenseValue} €',
-                                          style: const TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 13,
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                topRight: Radius.circular(15),
+                                                bottomRight:
+                                                    Radius.circular(15),
+                                              ),
+                                            ),
+                                            child: Center(
+                                                child: FaIcon(
+                                                    expense.category!.icon)),
                                           ),
-                                          textAlign: TextAlign.center,
                                         ),
                                       ],
                                     ),
                                   ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        borderRadius: BorderRadius.only(
-                                          topRight: Radius.circular(15),
-                                          bottomRight: Radius.circular(15),
-                                        ),
-                                      ),
-                                      child: Center(
-                                          child:
-                                              FaIcon(expense.category!.icon)),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                        itemCount: snapshot.data?.length ?? 0,
-                      );
-                    },
+                                ),
+                              ],
+                            );
+                          },
+                          itemCount: snapshot.data?.length ?? 0,
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
