@@ -44,6 +44,10 @@ dependencies:
   insta_image_viewer: ^1.0.4
   flutter_bcrypt: ^1.0.8
   fl_chart: ^0.67.0
+  async: ^2.11.0
+  stream_transform: ^2.1.0
+
+
 
 
 dev_dependencies:

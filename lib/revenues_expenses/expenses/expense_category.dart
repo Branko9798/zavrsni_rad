@@ -5,146 +5,183 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class ExpenseCategory {
   final IconData icon;
   final String name;
+  final Color color;
   final String id;
 
-  const ExpenseCategory(this.icon, this.name, this.id);
+  const ExpenseCategory(
+    this.icon,
+    this.name,
+    this.color,
+    this.id,
+  );
 
   static const categories = <ExpenseCategory>[
     ExpenseCategory(
       FontAwesomeIcons.house,
       "House",
+      Colors.blue,
       "2490CC64-A729-429D-8547-FACCFA5DD3CD",
     ),
     ExpenseCategory(
       FontAwesomeIcons.receipt,
       "Bills",
+      Colors.red,
       "2545516C-A27B-4DFD-B5BB-A978B155C76B",
     ),
     ExpenseCategory(
       Icons.face_2,
       "Girlfriend",
+      Colors.pink,
       "AD2AF3BF-A9B1-4879-A8CE-1A50C914333A",
     ),
     ExpenseCategory(
       Icons.face_6,
       "Boyfriend",
+      Colors.blueGrey,
       "62E4E715-72F2-4544-9E81-69D20F322710",
     ),
-    ExpenseCategory(FontAwesomeIcons.babyCarriage, "Babysitter",
-        "1776B960-3F74-40F3-A21C-AFDEF0009C5B"),
+    ExpenseCategory(
+      FontAwesomeIcons.babyCarriage,
+      "Babysitter",
+      Colors.purpleAccent,
+      "1776B960-3F74-40F3-A21C-AFDEF0009C5B",
+    ),
     ExpenseCategory(
       FontAwesomeIcons.child,
       "Child",
+      Colors.orange,
       "827D718B-C5A5-4ACD-BAF1-FB667375F8F8",
     ),
     ExpenseCategory(
       FontAwesomeIcons.personCane,
       "Family",
+      Colors.blueGrey,
       "495E4B51-B22C-48C9-A2D0-20CFCB90710D",
     ),
     ExpenseCategory(
       FontAwesomeIcons.dog,
       "Pet",
+      Colors.brown,
       "01BC7E90-332A-40BB-B572-A75BFA0AD86E",
     ),
     ExpenseCategory(
       FontAwesomeIcons.burger,
       "Food",
+      Colors.deepOrange,
       "97FD1EBF-B07B-4B55-8C72-12E33464DBAF",
     ),
     ExpenseCategory(
       FontAwesomeIcons.mugSaucer,
       "Drinks",
+      Colors.cyan,
       "5AB8C3CE-41BF-46E4-8882-253A1E9196F2",
     ),
     ExpenseCategory(
       FontAwesomeIcons.car,
       "Car",
+      Colors.grey,
       "5A526F89-DF4B-45BA-922C-7D5C8A66121E",
     ),
     ExpenseCategory(
       FontAwesomeIcons.trainSubway,
       "Transport",
+      Colors.indigo,
       "2D76D1BE-DFF3-49D3-BA29-A61D1A8EC5A9",
     ),
     ExpenseCategory(
       FontAwesomeIcons.cartShopping,
       "Grocery",
+      Colors.teal,
       "6969F001-969A-42D4-A8A7-F68B03E233D0",
     ),
     ExpenseCategory(
       FontAwesomeIcons.briefcase,
       "Buisness",
+      Colors.black12,
       "72C03AAC-D111-42BF-8ED0-1A76A791A373",
     ),
     ExpenseCategory(
       FontAwesomeIcons.gifts,
       "Gifts",
+      Colors.yellow,
       "E85268B4-A3B8-499C-9124-BB0AA08AFA4A",
     ),
     ExpenseCategory(
       FontAwesomeIcons.shirt,
       "Clothes",
+      Colors.lightBlue,
       "8719A56F-AB80-49FB-9AF0-3C27FD69A7F6",
     ),
     ExpenseCategory(
       FontAwesomeIcons.scissors,
       "Haircut",
+      Colors.orangeAccent,
       "58C142EF-4671-41A7-9099-1E97107838A3",
     ),
     ExpenseCategory(
       FontAwesomeIcons.computer,
       "Tehnology",
+      Colors.cyanAccent,
       "959884A4-6E43-4154-9B56-853BD8DA8B3F",
     ),
     ExpenseCategory(
       FontAwesomeIcons.paintRoller,
       "Housing",
+      Colors.lightBlue,
       "2F71BEB0-6286-4485-8E6E-FC593FF08423",
     ),
     ExpenseCategory(
       FontAwesomeIcons.couch,
       "Furniture",
+      Colors.brown,
       "7EB57E4F-67FB-4DB1-86D6-60DE3BFAE185",
     ),
     ExpenseCategory(
       FontAwesomeIcons.wineBottle,
       "Party",
+      Colors.black87,
       "9E06821B-AB13-4771-80F6-6B0FE455D59C",
     ),
     ExpenseCategory(
       FontAwesomeIcons.futbol,
       "Sport",
+      Colors.greenAccent,
       "19EFAD07-E8F5-4622-BC6C-6B901D919B98",
     ),
     ExpenseCategory(
       FontAwesomeIcons.airbnb,
       "Vacation",
+      Colors.white,
       "9EE6182E-E01E-4833-984B-052D36461141",
     ),
     ExpenseCategory(
       FontAwesomeIcons.hammer,
       "Repair",
+      Colors.grey,
       "04547756-9B28-474A-8FAB-5F639B55FD0F",
     ),
     ExpenseCategory(
       FontAwesomeIcons.heartPulse,
       "Health",
+      Colors.red,
       "5546AF53-DD98-4DB6-A804-9CAF2594EFD5",
     ),
     ExpenseCategory(
       FontAwesomeIcons.handHoldingDollar,
       "Donate",
+      Colors.green,
       "11371D80-4C0F-4457-ABC0-ED8E252A78F5",
     ),
     ExpenseCategory(
       FontAwesomeIcons.planeUp,
       "Travel",
+      Colors.tealAccent,
       "6E340235-1E0B-45D3-9CE8-99F60A565D23",
     ),
     ExpenseCategory(
       FontAwesomeIcons.dice,
       "Gambling",
+      Colors.black26,
       "560CF766-12C4-47C3-B370-FB3A6AA2DE76",
     ),
   ];

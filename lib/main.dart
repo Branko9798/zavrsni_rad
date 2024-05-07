@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/home.dart';
-import 'package:zavrsni_rad/statistics_screen.dart';
+import 'package:zavrsni_rad/statistics/statistics_model.dart';
+import 'package:zavrsni_rad/statistics/statistics_screen.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income_category.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_model.dart';
 
 import 'package:get_it/get_it.dart';
@@ -17,7 +17,20 @@ void main() {
   getIt.registerSingleton<AppDatabase>(AppDatabase());
   getIt.registerSingleton<IncomeModel>(IncomeModel());
   getIt.registerSingleton<ExpensesModel>(ExpensesModel());
+  getIt.registerSingleton<StatisticsModel>(StatisticsModel());
 
+  getIt<StatisticsModel>().incomesTotal().listen(
+    (event) {
+      print("TEST");
+      print(event);
+    },
+  );
+  getIt<StatisticsModel>().expensesTotal().listen((event) {
+    print("TEST 2");
+    print(event);
+  });
+
+ 
   runApp(const MyApp());
 }
 
