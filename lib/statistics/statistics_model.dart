@@ -1,11 +1,10 @@
 import 'package:drift/drift.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_category.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expenses.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_category.dart';
 
 class StatisticsModel {
@@ -53,6 +52,10 @@ class StatisticsModel {
     return db.expensesTable.all().watch().map((expenses) {
       var expensesTotalByCategory = <ExpenseCategory, double>{};
 
+      final grandTotal = expenses
+          .map((e) => e.expenseValue)
+          .reduce((value, element) => value + element);
+
       for (var expense in expenses) {
         if (expense.category == null) {
           continue;
@@ -69,10 +72,13 @@ class StatisticsModel {
         (entry) {
           final key = entry.key;
           final value = entry.value;
-          return PieChartSectionData(
+          final percentage = (entry.value / grandTotal) * 100;
+          return CustomPieChartSectionData(
             value: value,
-            title: key.name,
+            title: "${percentage.toStringAsFixed(0)}%",
+            titleStyle: const TextStyle(color: Colors.white),
             color: key.color,
+            legendTitle: key.name,
           );
         },
       ).toList();
@@ -84,6 +90,10 @@ class StatisticsModel {
   Stream<PieChartData> incomesByCategory() {
     return db.incomesTable.all().watch().map((incomes) {
       var incomesTotalByCategory = <IncomeCategory, double>{};
+
+      final grandTotal = incomes
+          .map((e) => e.incomeValue)
+          .reduce((value, element) => value + element);
 
       for (var income in incomes) {
         if (income.category == null) {
@@ -101,15 +111,71 @@ class StatisticsModel {
         (entry) {
           final key = entry.key;
           final value = entry.value;
-          return PieChartSectionData(
+          final percentage = (entry.value / grandTotal) * 100;
+          return CustomPieChartSectionData(
             value: value,
-            title: key.name,
+            title: "${percentage.toStringAsFixed(0)}%",
+            titleStyle: const TextStyle(color: Colors.white),
             color: key.color,
+            legendTitle: key.name,
           );
         },
       ).toList();
 
       return PieChartData(sections: sectionData);
     });
+  }
+}
+
+class CustomPieChartSectionData extends PieChartSectionData {
+  final String legendTitle;
+
+  CustomPieChartSectionData({
+    super.value,
+    super.color,
+    super.gradient,
+    super.radius,
+    super.showTitle,
+    super.titleStyle,
+    super.title,
+    super.borderSide,
+    super.badgeWidget,
+    super.titlePositionPercentageOffset,
+    super.badgePositionPercentageOffset,
+    this.legendTitle = "",
+  });
+
+  /// Copies current [PieChartSectionData] to a new [PieChartSectionData],
+  /// and replaces provided values.
+  @override
+  CustomPieChartSectionData copyWith({
+    double? value,
+    Color? color,
+    Gradient? gradient,
+    double? radius,
+    bool? showTitle,
+    TextStyle? titleStyle,
+    String? title,
+    BorderSide? borderSide,
+    Widget? badgeWidget,
+    double? titlePositionPercentageOffset,
+    double? badgePositionPercentageOffset,
+    String? legendTitle,
+  }) {
+    return CustomPieChartSectionData(
+        value: value ?? this.value,
+        color: color ?? this.color,
+        gradient: gradient ?? this.gradient,
+        radius: radius ?? this.radius,
+        showTitle: showTitle ?? this.showTitle,
+        titleStyle: titleStyle ?? this.titleStyle,
+        title: title ?? this.title,
+        borderSide: borderSide ?? this.borderSide,
+        badgeWidget: badgeWidget ?? this.badgeWidget,
+        titlePositionPercentageOffset:
+            titlePositionPercentageOffset ?? this.titlePositionPercentageOffset,
+        badgePositionPercentageOffset:
+            badgePositionPercentageOffset ?? this.badgePositionPercentageOffset,
+        legendTitle: legendTitle ?? this.legendTitle);
   }
 }

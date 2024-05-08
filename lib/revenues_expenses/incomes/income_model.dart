@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:zavrsni_rad/database/database.dart';

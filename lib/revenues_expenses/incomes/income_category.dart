@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expense_category.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income_screen.dart';
 
 class IncomeCategory {
   final IconData icon;

@@ -19,18 +19,6 @@ void main() {
   getIt.registerSingleton<ExpensesModel>(ExpensesModel());
   getIt.registerSingleton<StatisticsModel>(StatisticsModel());
 
-  getIt<StatisticsModel>().incomesTotal().listen(
-    (event) {
-      print("TEST");
-      print(event);
-    },
-  );
-  getIt<StatisticsModel>().expensesTotal().listen((event) {
-    print("TEST 2");
-    print(event);
-  });
-
- 
   runApp(const MyApp());
 }
 

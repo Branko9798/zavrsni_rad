@@ -1,9 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,6 +15,7 @@ import 'package:zavrsni_rad/revenues_expenses/expenses/expenses_screen.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_category.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_model.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_screen.dart';
+import 'package:zavrsni_rad/statistics/statistics_model.dart';
 
 class Home extends StatefulWidget {
   Home({super.key});
@@ -31,6 +29,7 @@ class _HomeState extends State<Home> {
 
   File? image;
   String? selectedCategory;
+  final statisticModel = getIt<StatisticsModel>();
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +47,7 @@ class _HomeState extends State<Home> {
             padding: const EdgeInsets.all(15.0),
             child: ListView(
               children: [
-                Container(
+                SizedBox(
                   height: 200,
                   child: DrawerHeader(
                     child: Column(
@@ -142,27 +141,87 @@ class _HomeState extends State<Home> {
         ),
         body: Column(
           children: [
-            const SizedBox(
-              height: 40,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      'Incomes',
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 40,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border:
+                            const Border(top: BorderSide(color: Colors.white)),
+                        color: Colors.tealAccent[400],
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          const Expanded(
+                            flex: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Incomes',
+                                  textAlign: TextAlign.end,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const VerticalDivider(
+                            indent: 0,
+                            color: Colors.white,
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: StreamBuilder(
+                                stream: statisticModel.total(),
+                                builder: (context, snapshot) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text(
+                                          "BALANCE: ${snapshot.data}",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                          ),
+                          const VerticalDivider(
+                            indent: 0,
+                            color: Colors.white,
+                          ),
+                          const Expanded(
+                              flex: 1,
+                              child: Text(
+                                'Expenses',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
+                              ))
+                        ],
+                      ),
                     ),
                   ),
-                  Expanded(
-                      child: Text(
-                    'Expenses',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ))
-                ],
-              ),
+                ),
+              ],
             ),
+            const SizedBox(height: 7),
             Expanded(
               child: Row(
                 children: [
@@ -183,18 +242,22 @@ class _HomeState extends State<Home> {
 
                             return Column(
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.calendar_today,
-                                        color: Colors.grey, size: 16),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      "${income.date.day}/${income.date.month}/${income.date.year}",
-                                      style:
-                                          const TextStyle(color: Colors.grey),
-                                    ),
-                                  ],
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.calendar_today,
+                                          color: Colors.grey, size: 16),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        "${income.date.day}/${income.date.month}/${income.date.year}",
+                                        style:
+                                            const TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 Card(
                                   color: Colors.tealAccent[200],
@@ -246,6 +309,7 @@ class _HomeState extends State<Home> {
                                     ),
                                   ),
                                 ),
+                                const SizedBox(height: 7),
                               ],
                             );
                           },
@@ -264,21 +328,24 @@ class _HomeState extends State<Home> {
                         return ListView.builder(
                           itemBuilder: (context, index) {
                             final expense = snapshot.data![index];
-
                             return Column(
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.calendar_today,
-                                        color: Colors.grey, size: 16),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      "${expense.date.day}/${expense.date.month}/${expense.date.year}",
-                                      style:
-                                          const TextStyle(color: Colors.grey),
-                                    ),
-                                  ],
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      const Icon(Icons.calendar_today,
+                                          color: Colors.grey, size: 16),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        "${expense.date.day}/${expense.date.month}/${expense.date.year}",
+                                        style:
+                                            const TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 Card(
                                   color: Colors.red[100],
@@ -330,6 +397,7 @@ class _HomeState extends State<Home> {
                                     ),
                                   ),
                                 ),
+                                const SizedBox(height: 7),
                               ],
                             );
                           },
