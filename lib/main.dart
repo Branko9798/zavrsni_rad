@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/home.dart';
 import 'package:zavrsni_rad/statistics/statistics_model.dart';
@@ -18,6 +19,8 @@ void main() {
   getIt.registerSingleton<IncomeModel>(IncomeModel());
   getIt.registerSingleton<ExpensesModel>(ExpensesModel());
   getIt.registerSingleton<StatisticsModel>(StatisticsModel());
+
+  initializeDateFormatting();
 
   runApp(const MyApp());
 }
@@ -55,7 +58,7 @@ class _MyAppState extends State<MyApp> {
         body: PageView(
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
-          children: [Home(), const StatisticsScreen(), const UserScreen()],
+          children: [Home(), const StatisticsScreen()],
           onPageChanged: (index) {
             setState(() {
               myIndex = index;
@@ -91,12 +94,6 @@ class _MyAppState extends State<MyApp> {
                   color: Colors.white,
                 ),
                 label: 'Statistics'),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.person,
-                  color: Colors.white,
-                ),
-                label: 'User')
           ],
         ),
       ),

@@ -11,7 +11,9 @@ import 'package:uuid/uuid.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_category.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
+import 'package:zavrsni_rad/revenues_expenses/expenses/expenses.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expenses_screen.dart';
+import 'package:zavrsni_rad/revenues_expenses/incomes/income.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_category.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_model.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_screen.dart';
@@ -30,10 +32,12 @@ class _HomeState extends State<Home> {
   File? image;
   String? selectedCategory;
   final statisticModel = getIt<StatisticsModel>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: const Text(
             'HOME',
@@ -41,102 +45,78 @@ class _HomeState extends State<Home> {
           ),
           backgroundColor: Colors.tealAccent[400],
           centerTitle: true,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  _scaffoldKey.currentState?.openDrawer();
+                },
+                icon: const Icon(Icons.filter_alt_rounded))
+          ],
         ),
         drawer: Drawer(
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: ListView(
-              children: [
-                SizedBox(
-                  height: 200,
-                  child: DrawerHeader(
-                    child: Column(
-                      children: [
-                        Center(
-                          child: Stack(
-                            children: [
-                              InstaImageViewer(
-                                backgroundIsTransparent: true,
-                                disposeLevel: DisposeLevel.high,
-                                backgroundColor: Colors.grey,
-                                child: CircleAvatar(
-                                  radius: 65,
-                                  backgroundImage: (image != null)
-                                      ? FileImage(image!)
-                                      : const NetworkImage(
-                                              'path_to_placeholder_image')
-                                          as ImageProvider,
-                                ),
-                              ),
-                              Positioned(
-                                bottom: -5,
-                                left: 80,
-                                child: IconButton(
-                                  onPressed: () {
-                                    pickImage();
-                                  },
-                                  icon: const Icon(Icons.add_a_photo),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text('Branko')
-                      ],
-                    ),
+          child: ListView(
+            children: [
+              SizedBox(
+                height: 75,
+                child: DrawerHeader(
+                  decoration: BoxDecoration(color: Colors.tealAccent[400]),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'FILTERS ',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                    ],
                   ),
                 ),
-                const Text(
-                  'Filters: ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                ExpansionTile(
-                  title: const Text('Incomes'),
-                  children: [
-                    for (var incomeCategory in IncomeCategory.categories)
-                      ListTile(
-                        title: Text(incomeCategory.name),
-                        onTap: () {
-                          setState(() {
-                            if (selectedCategory == incomeCategory.id) {
-                              selectedCategory = null;
-                            } else {
-                              selectedCategory = incomeCategory.id;
-                            }
-                          });
-                          Navigator.of(context).pop();
-                        },
-                        tileColor: selectedCategory == incomeCategory.id
-                            ? Colors.grey.withOpacity(0.3)
-                            : null,
-                      ),
-                  ],
-                ),
-                ExpansionTile(
-                  title: const Text('Expenses'),
-                  children: [
-                    for (var expensesCategory in ExpenseCategory.categories)
-                      ListTile(
-                        title: Text(expensesCategory.name),
-                        onTap: () {
-                          setState(() {
-                            if (selectedCategory == expensesCategory.id) {
-                              selectedCategory = null;
-                            } else {
-                              selectedCategory = expensesCategory.id;
-                            }
-                          });
-                          Navigator.of(context).pop();
-                        },
-                        tileColor: selectedCategory == expensesCategory.id
-                            ? Colors.grey.withOpacity(0.3)
-                            : null,
-                      ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              ExpansionTile(
+                title: const Text('Incomes'),
+                children: [
+                  for (var incomeCategory in IncomeCategory.categories)
+                    ListTile(
+                      title: Text(incomeCategory.name),
+                      onTap: () {
+                        setState(() {
+                          if (selectedCategory == incomeCategory.id) {
+                            selectedCategory = null;
+                          } else {
+                            selectedCategory = incomeCategory.id;
+                          }
+                        });
+                        Navigator.of(context).pop();
+                      },
+                      tileColor: selectedCategory == incomeCategory.id
+                          ? Colors.grey.withOpacity(0.3)
+                          : null,
+                    ),
+                ],
+              ),
+              ExpansionTile(
+                title: const Text('Expenses'),
+                children: [
+                  for (var expensesCategory in ExpenseCategory.categories)
+                    ListTile(
+                      title: Text(expensesCategory.name),
+                      onTap: () {
+                        setState(() {
+                          if (selectedCategory == expensesCategory.id) {
+                            selectedCategory = null;
+                          } else {
+                            selectedCategory = expensesCategory.id;
+                          }
+                        });
+                        Navigator.of(context).pop();
+                      },
+                      tileColor: selectedCategory == expensesCategory.id
+                          ? Colors.grey.withOpacity(0.3)
+                          : null,
+                    ),
+                ],
+              ),
+            ],
           ),
         ),
         body: Column(
@@ -237,8 +217,12 @@ class _HomeState extends State<Home> {
                             if (!snapshot.hasData) {
                               return const CircularProgressIndicator();
                             }
+                            final sortedIncomes =
+                                List<Income>.from(snapshot.data!);
+                            sortedIncomes
+                                .sort((a, b) => a.date.compareTo(b.date));
 
-                            final income = snapshot.data![index];
+                            final income = sortedIncomes[index];
 
                             return Column(
                               children: [
@@ -265,8 +249,37 @@ class _HomeState extends State<Home> {
                                     onLongPress: () {},
                                     child: Row(
                                       children: [
+                                        PopupMenuButton(
+                                            itemBuilder: ((context) => [
+                                                  PopupMenuItem(
+                                                    child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.edit),
+                                                      title: const Text("Edit"),
+                                                      onTap: () {
+                                                        _showIncomesScreen(
+                                                            context,
+                                                            incomeToEdit:
+                                                                income);
+                                                      },
+                                                    ),
+                                                  ),
+                                                  PopupMenuItem(
+                                                    child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.delete),
+                                                      title:
+                                                          const Text("Remove"),
+                                                      onTap: () {
+                                                        IncomeModel()
+                                                            .removeIncome(
+                                                                income);
+                                                      },
+                                                    ),
+                                                  )
+                                                ])),
                                         Expanded(
-                                          flex: 2,
+                                          flex: 1,
                                           child: Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
@@ -277,6 +290,7 @@ class _HomeState extends State<Home> {
                                                   fontSize: 16,
                                                 ),
                                                 textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                               const SizedBox(height: 4),
                                               Text(
@@ -286,6 +300,7 @@ class _HomeState extends State<Home> {
                                                   fontSize: 13,
                                                 ),
                                                 textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ],
                                           ),
@@ -327,7 +342,11 @@ class _HomeState extends State<Home> {
                       builder: (context, snapshot) {
                         return ListView.builder(
                           itemBuilder: (context, index) {
-                            final expense = snapshot.data![index];
+                            final sortedExpenses =
+                                List<Expense>.from(snapshot.data!);
+                            sortedExpenses
+                                .sort((a, b) => a.date.compareTo(b.date));
+                            final expense = sortedExpenses[index];
                             return Column(
                               children: [
                                 Padding(
@@ -348,13 +367,42 @@ class _HomeState extends State<Home> {
                                   ),
                                 ),
                                 Card(
-                                  color: Colors.red[100],
+                                  color: Colors.deepOrange[200],
                                   child: InkWell(
                                     onLongPress: () {},
                                     child: Row(
                                       children: [
+                                        PopupMenuButton(
+                                            itemBuilder: ((context) => [
+                                                  PopupMenuItem(
+                                                    child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.edit),
+                                                      title: const Text("Edit"),
+                                                      onTap: () {
+                                                        _showExpenseScreen(
+                                                            context,
+                                                            expenseToEdit:
+                                                                expense);
+                                                      },
+                                                    ),
+                                                  ),
+                                                  PopupMenuItem(
+                                                    child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.delete),
+                                                      title:
+                                                          const Text("Remove"),
+                                                      onTap: () {
+                                                        ExpensesModel()
+                                                            .removeExpense(
+                                                                expense);
+                                                      },
+                                                    ),
+                                                  )
+                                                ])),
                                         Expanded(
-                                          flex: 2,
+                                          flex: 1,
                                           child: Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
@@ -365,6 +413,7 @@ class _HomeState extends State<Home> {
                                                   fontSize: 16,
                                                 ),
                                                 textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                               const SizedBox(height: 4),
                                               Text(
@@ -374,6 +423,7 @@ class _HomeState extends State<Home> {
                                                   fontSize: 13,
                                                 ),
                                                 textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ],
                                           ),
@@ -457,12 +507,33 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _showExpenseScreen(BuildContext context) {
+  void _showExpenseScreen(
+    BuildContext context, {
+    Expense? expenseToEdit = null,
+  }) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         fullscreenDialog: true,
         builder: (BuildContext context) {
-          return ExpensesScreen();
+          return ExpensesScreen(
+            expenseToEdit: expenseToEdit,
+          );
+        },
+      ),
+    );
+  }
+
+  void _showIncomesScreen(
+    BuildContext context, {
+    Income? incomeToEdit = null,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (BuildContext context) {
+          return IncomeScreen(
+            incomeToEdit: incomeToEdit,
+          );
         },
       ),
     );

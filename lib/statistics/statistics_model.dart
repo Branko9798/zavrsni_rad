@@ -125,6 +125,69 @@ class StatisticsModel {
       return PieChartData(sections: sectionData);
     });
   }
+
+  Stream<LineChartData> expenseLineChartPoints() {
+    final db = getIt<AppDatabase>();
+    return db.expensesTable.all().watch().map((expenses) {
+      List<FlSpot> expenseData = expenses
+          .fold(<DateTime, double>{}, (previousValue, element) {
+            final date = element.date.startOfDay;
+
+            if (previousValue[date] == null) {
+              previousValue[date] = 0;
+            }
+            previousValue[date] = previousValue[date]! + element.expenseValue;
+
+            return previousValue;
+          })
+          .entries
+          .map((entry) => FlSpot(
+                entry.key.day.toDouble(),
+                entry.value,
+              ))
+          .toList();
+
+      return LineChartData(
+        lineBarsData: [
+          LineChartBarData(
+            spots: expenseData,
+            barWidth: 3,
+            isCurved: false,
+          ),
+        ],
+        titlesData: FlTitlesData(
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: 1,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                return Text(
+                  value.toInt().toString(),
+                  style: const TextStyle(
+                    color: Color(0xff68737d),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                );
+              },
+            ),
+          ),
+          leftTitles: const AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+            ),
+          ),
+        ),
+      );
+    });
+  }
 }
 
 class CustomPieChartSectionData extends PieChartSectionData {
@@ -178,4 +241,9 @@ class CustomPieChartSectionData extends PieChartSectionData {
             badgePositionPercentageOffset ?? this.badgePositionPercentageOffset,
         legendTitle: legendTitle ?? this.legendTitle);
   }
+}
+
+// TODO: Move to utils folder
+extension StartOfDay on DateTime {
+  DateTime get startOfDay => DateTime(year, month, day);
 }

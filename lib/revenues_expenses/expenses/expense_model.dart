@@ -1,13 +1,10 @@
 import 'package:drift/drift.dart';
-import 'package:flutter/material.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expenses.dart';
 
 class ExpensesModel {
   final db = getIt<AppDatabase>();
-
-  final expenses = ValueNotifier<List<Expense>>([]);
 
   Stream<List<Expense>> get allExpensesStream => db.expensesTable.all().watch();
 
@@ -18,8 +15,14 @@ class ExpensesModel {
   }
 
   void addExpense(Expense expense) async {
-    var newValue = expenses.value..add(expense);
     await db.expensesTable.insert().insert(expense);
-    expenses.value = newValue;
+  }
+
+  void removeExpense(Expense expense) async {
+    await db.expensesTable.delete().delete(expense);
+  }
+
+  void updateExpenses(Expense expense) async {
+    await db.expensesTable.update().replace(expense);
   }
 }

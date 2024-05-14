@@ -1,12 +1,10 @@
 import 'package:drift/drift.dart';
-import 'package:flutter/material.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income.dart';
 
 class IncomeModel {
   final db = getIt<AppDatabase>();
-  final incomes = ValueNotifier<List<Income>>([]);
 
   Stream<List<Income>> get allIncomesStream => db.incomesTable.all().watch();
 
@@ -17,8 +15,14 @@ class IncomeModel {
   }
 
   void addIncome(Income income) async {
-    var newValue = incomes.value..add(income);
     await db.incomesTable.insert().insert(income);
-    incomes.value = newValue;
+  }
+
+  void removeIncome(Income income) async {
+    await db.incomesTable.delete().delete(income);
+  }
+
+  void updateIncome(Income income) async {
+    await db.incomesTable.update().replace(income);
   }
 }

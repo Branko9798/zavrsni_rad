@@ -1,42 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expenses_screen.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_category.dart';
 import 'package:zavrsni_rad/revenues_expenses/incomes/income_model.dart';
+import 'package:zavrsni_rad/statistics/statistics_model.dart';
 
 class IncomeScreen extends StatefulWidget {
-  IncomeScreen({super.key});
+  IncomeScreen({super.key, this.incomeToEdit});
+
+  final Income? incomeToEdit;
 
   @override
   State<IncomeScreen> createState() => _IncomeScreenState();
 }
 
 class _IncomeScreenState extends State<IncomeScreen> {
-  final income = TextEditingController();
-
   final incomeModel = getIt<IncomeModel>();
-
-  int? selectedIndex;
 
   String? selectedIconId;
   String? selectedIconName;
 
-  double boxHeight = 0;
+  DateFormat dateFormatter = DateFormat.yMd('hr');
+
   final note = TextEditingController();
   final incomeValue = TextEditingController();
   final valueFocusNode = FocusNode();
 
-  void changeAnimatedContainer() {
-    setState(() {
-      if (selectedIndex == null) {
-        boxHeight = 0;
-      } else {
-        boxHeight = 200;
-      }
-    });
+  DateTime date = DateTime.now();
+
+  int? selectedIndex;
+
+  IncomeCategory? get selectedCategory =>
+      selectedIndex == null ? null : IncomeCategory.categories[selectedIndex!];
+
+  @override
+  void initState() {
+    selectedIndex = IncomeCategory.categories.indexWhere((element) =>
+        element.id.toLowerCase() ==
+        widget.incomeToEdit?.incomeCategoryId.toLowerCase());
+
+    if (selectedIndex == -1) {
+      selectedIndex = null;
+    }
+
+    incomeValue.text = widget.incomeToEdit?.incomeValue.toString() ?? "";
+    note.text = widget.incomeToEdit?.incomeNote ?? "";
+    date = widget.incomeToEdit?.date ?? DateTime.now();
+
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
@@ -115,14 +131,9 @@ class _IncomeScreenState extends State<IncomeScreen> {
                               setState(() {
                                 if (selectedIndex == index) {
                                   selectedIndex = null;
-                                  selectedIconId = null;
-                                  selectedIconName = null;
                                 } else {
                                   selectedIndex = index;
-                                  selectedIconId = incomeCategory.id;
-                                  selectedIconName = incomeCategory.name;
                                 }
-                                changeAnimatedContainer();
                               });
                             },
                             icon: FaIcon(
@@ -140,12 +151,12 @@ class _IncomeScreenState extends State<IncomeScreen> {
             ),
           ),
           AnimatedContainer(
-            duration: boxHeight == 0
+            duration: selectedIndex == 0
                 ? const Duration(milliseconds: 500)
                 : const Duration(milliseconds: 250),
             color: Colors.grey[100],
-            height: boxHeight,
-            curve: boxHeight == 0 ? Curves.easeInBack : Curves.easeIn,
+            height: selectedIndex == null ? 0 : 300,
+            curve: selectedIndex == 0 ? Curves.easeInBack : Curves.easeIn,
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: SingleChildScrollView(
@@ -157,7 +168,6 @@ class _IncomeScreenState extends State<IncomeScreen> {
                           controller: note,
                           onFieldSubmitted: (value) {
                             saveButton();
-                            Navigator.of(context).pop();
                           },
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
@@ -172,9 +182,9 @@ class _IncomeScreenState extends State<IncomeScreen> {
                         TextFormField(
                           controller: incomeValue,
                           focusNode: valueFocusNode,
+                          textInputAction: TextInputAction.go,
                           onFieldSubmitted: (value) {
                             saveButton();
-                            Navigator.of(context).pop();
                           },
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
@@ -186,6 +196,51 @@ class _IncomeScreenState extends State<IncomeScreen> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 20),
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: TextButton(
+                            onPressed: () async {
+                              final selectedDate = await showDatePicker(
+                                context: context,
+                                initialDate: date,
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime(3000),
+                              );
+                              setState(() {
+                                if (selectedDate != null) {
+                                  date = selectedDate;
+                                }
+                              });
+                            },
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 16.0),
+                              backgroundColor: Colors.tealAccent[400],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Select Date",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(width: 8.0),
+                                Icon(
+                                  Icons.date_range_outlined,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ],
@@ -210,13 +265,22 @@ class _IncomeScreenState extends State<IncomeScreen> {
   }
 
   void saveButton() {
+    if (selectedCategory == null) {
+      // TODO: Show error
+      return;
+    }
     final incomeDb = Income(
-      const Uuid().v4(),
+      widget.incomeToEdit?.id ?? Uuid().v4(),
       note.text,
-      double.parse(incomeValue.text),
-      selectedIconId.toString(),
-      DateTime.now(),
+      double.parse(incomeValue.value.text),
+      selectedCategory!.id,
+      date.startOfDay,
     );
-    incomeModel.addIncome(incomeDb);
+    if (widget.incomeToEdit == null) {
+      incomeModel.addIncome(incomeDb);
+    } else {
+      incomeModel.updateIncome(incomeDb);
+    }
+    Navigator.pop(context);
   }
 }

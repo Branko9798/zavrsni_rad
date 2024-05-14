@@ -122,12 +122,32 @@ class StatisticsScreen extends StatelessWidget {
                   },
                 ),
               ),
+              const SizedBox(height: 20),
+              Container(
+                height: 300,
+                width: 400,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  border: Border.all(color: Colors.black, width: 1.0),
+                ),
+                child: StreamBuilder(
+                  stream: statisticsModel.expenseLineChartPoints(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return LineChart(snapshot.requireData);
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
   List<Widget> legendForCharts(PieChartData data) {
     List<Widget> legendItems = [];
 
