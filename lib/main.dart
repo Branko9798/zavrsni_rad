@@ -9,7 +9,6 @@ import 'package:zavrsni_rad/revenues_expenses/incomes/income_model.dart';
 
 import 'package:get_it/get_it.dart';
 
-import 'package:zavrsni_rad/user_screen.dart';
 
 GetIt getIt = GetIt.instance;
 

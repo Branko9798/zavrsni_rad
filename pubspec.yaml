@@ -48,7 +48,16 @@ dependencies:
   stream_transform: ^2.1.0
   collection: ^1.18.0
   intl: ^0.19.0
+  flutter_native_splash: ^2.4.0
 
+
+
+flutter_nazive_splash:
+android: true
+ios: true
+
+color: "#f8f8ff"
+image: assets/splash.png
 
 
 

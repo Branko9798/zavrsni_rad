@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -48,8 +49,13 @@ class StatisticsModel {
     return incomesTotal().combineLatest(expensesTotal(), (p0, p1) => p0 - p1);
   }
 
-  Stream<PieChartData> expensesByCategory() {
-    return db.expensesTable.all().watch().map((expenses) {
+  Stream<PieChartData> expensesByCategory(DateTime date) {
+    return (db.expensesTable.select()
+          ..where((tbl) =>
+              tbl.date.month.equals(date.month) &
+              tbl.date.year.equals(date.year)))
+        .watch()
+        .map((expenses) {
       var expensesTotalByCategory = <ExpenseCategory, double>{};
 
       final grandTotal = expenses
@@ -87,8 +93,13 @@ class StatisticsModel {
     });
   }
 
-  Stream<PieChartData> incomesByCategory() {
-    return db.incomesTable.all().watch().map((incomes) {
+  Stream<PieChartData> incomesByCategory(DateTime date) {
+    return (db.incomesTable.select()
+          ..where((tbl) =>
+              tbl.date.month.equals(date.month) &
+              tbl.date.year.equals(date.year)))
+        .watch()
+        .map((incomes) {
       var incomesTotalByCategory = <IncomeCategory, double>{};
 
       final grandTotal = incomes
@@ -126,9 +137,85 @@ class StatisticsModel {
     });
   }
 
-  Stream<LineChartData> expenseLineChartPoints() {
+  Stream<LineChartData> incomeLineChartPoints(DateTime date) {
     final db = getIt<AppDatabase>();
-    return db.expensesTable.all().watch().map((expenses) {
+    return (db.incomesTable.select()
+          ..where((tbl) =>
+              tbl.date.month.equals(date.month) &
+              tbl.date.year.equals(date.year)))
+        .watch()
+        .map((incomes) {
+      List<FlSpot> incomeData = incomes
+          .fold(<DateTime, double>{}, (previousValue, element) {
+            final date = element.date.startOfDay;
+
+            if (previousValue[date] == null) {
+              previousValue[date] = 0;
+            }
+            previousValue[date] = previousValue[date]! + element.incomeValue;
+
+            return previousValue;
+          })
+          .entries
+          .map((entry) => FlSpot(
+                entry.key.day.toDouble(),
+                entry.value,
+              ))
+          .sorted((a, b) => a.x.compareTo(b.x))
+          .toList();
+
+      return LineChartData(
+        minY: 0,
+        lineBarsData: [
+          LineChartBarData(
+            spots: incomeData,
+            barWidth: 3,
+            isCurved: false,
+          ),
+        ],
+        titlesData: FlTitlesData(
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: 1,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                return Text(
+                  value.toInt().toString(),
+                  style: const TextStyle(
+                    color: Color(0xff68737d),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                );
+              },
+            ),
+          ),
+          leftTitles: const AxisTitles(
+            sideTitles: SideTitles(
+              reservedSize: 50,
+              showTitles: true,
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+  Stream<LineChartData> expenseLineChartPoints(DateTime date) {
+    final db = getIt<AppDatabase>();
+    return (db.expensesTable.select()
+          ..where((tbl) =>
+              tbl.date.month.equals(date.month) &
+              tbl.date.year.equals(date.year)))
+        .watch()
+        .map((expenses) {
       List<FlSpot> expenseData = expenses
           .fold(<DateTime, double>{}, (previousValue, element) {
             final date = element.date.startOfDay;
@@ -145,9 +232,11 @@ class StatisticsModel {
                 entry.key.day.toDouble(),
                 entry.value,
               ))
+          .sorted((a, b) => a.x.compareTo(b.x))
           .toList();
 
       return LineChartData(
+        minY: 0,
         lineBarsData: [
           LineChartBarData(
             spots: expenseData,
@@ -181,6 +270,7 @@ class StatisticsModel {
           ),
           leftTitles: const AxisTitles(
             sideTitles: SideTitles(
+              reservedSize: 50,
               showTitles: true,
             ),
           ),

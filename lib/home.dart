@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:insta_image_viewer/insta_image_viewer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:uuid/uuid.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/revenues_expenses/expenses/expense_category.dart';
@@ -33,6 +33,7 @@ class _HomeState extends State<Home> {
   String? selectedCategory;
   final statisticModel = getIt<StatisticsModel>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +48,17 @@ class _HomeState extends State<Home> {
           centerTitle: true,
           actions: [
             IconButton(
-                onPressed: () {
-                  _scaffoldKey.currentState?.openDrawer();
-                },
-                icon: const Icon(Icons.filter_alt_rounded))
+              onPressed: () {
+                _scaffoldKey.currentState?.openEndDrawer();
+              },
+              icon: const Icon(
+                Icons.filter_alt_rounded,
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
-        drawer: Drawer(
+        endDrawer: Drawer(
           child: ListView(
             children: [
               SizedBox(
@@ -156,29 +161,35 @@ class _HomeState extends State<Home> {
                             color: Colors.white,
                           ),
                           Expanded(
-                            flex: 2,
-                            child: StreamBuilder(
+                              flex: 2,
+                              child: StreamBuilder(
                                 stream: statisticModel.total(),
                                 builder: (context, snapshot) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(
-                                          "BALANCE: ${snapshot.data}",
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
+                                  if (snapshot.hasError) {
+                                    return const SnackBar(
+                                        content:
+                                            Text('Oops, something went wrong'));
+                                  } else {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text(
+                                            "BALANCE: ${snapshot.data}",
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }),
-                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                },
+                              )),
                           const VerticalDivider(
                             indent: 0,
                             color: Colors.white,
@@ -212,11 +223,13 @@ class _HomeState extends State<Home> {
                           : getIt<IncomeModel>()
                               .filteredIncomes([selectedCategory!]),
                       builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return const SnackBar(
+                              content: Text('Oops, something went wrong'));
+                        }
+
                         return ListView.builder(
                           itemBuilder: (context, index) {
-                            if (!snapshot.hasData) {
-                              return const CircularProgressIndicator();
-                            }
                             final sortedIncomes =
                                 List<Income>.from(snapshot.data!);
                             sortedIncomes
@@ -274,6 +287,8 @@ class _HomeState extends State<Home> {
                                                         IncomeModel()
                                                             .removeIncome(
                                                                 income);
+                                                        Navigator.of(context)
+                                                            .pop();
                                                       },
                                                     ),
                                                   )
@@ -342,6 +357,10 @@ class _HomeState extends State<Home> {
                       builder: (context, snapshot) {
                         return ListView.builder(
                           itemBuilder: (context, index) {
+                            if (snapshot.hasError) {
+                              return const SnackBar(
+                                  content: Text('Oops, something went wrong'));
+                            }
                             final sortedExpenses =
                                 List<Expense>.from(snapshot.data!);
                             sortedExpenses
@@ -397,6 +416,8 @@ class _HomeState extends State<Home> {
                                                         ExpensesModel()
                                                             .removeExpense(
                                                                 expense);
+                                                        Navigator.of(context)
+                                                            .pop();
                                                       },
                                                     ),
                                                   )
@@ -537,27 +558,5 @@ class _HomeState extends State<Home> {
         },
       ),
     );
-  }
-
-  Future<void> pickImage() async {
-    final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (pickedImage == null) {
-      return;
-    } else {
-      final appDir = await getApplicationDocumentsDirectory();
-      final fileName = const Uuid().v4();
-      final savedImage = File('${appDir.path}/$fileName.png');
-
-      await savedImage.writeAsBytes(await pickedImage.readAsBytes());
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('itemImage_$image', savedImage.path);
-
-      setState(() {
-        image = savedImage;
-      });
-    }
   }
 }
