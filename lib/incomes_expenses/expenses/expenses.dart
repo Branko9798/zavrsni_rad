@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart' hide JsonKey;
 import 'package:zavrsni_rad/database/database.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expense_category.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_category.dart';
 
 class Expense implements Insertable<Expense> {
   final String id;

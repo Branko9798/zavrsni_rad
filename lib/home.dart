@@ -3,20 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:uuid/uuid.dart';
 import 'package:zavrsni_rad/main.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expense_category.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expenses.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expenses_screen.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income_category.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income_model.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income_screen.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_category.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_model.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expenses.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expenses_screen.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_category.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_model.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_screen.dart';
 import 'package:zavrsni_rad/statistics/statistics_model.dart';
 
 class Home extends StatefulWidget {
@@ -40,25 +36,46 @@ class _HomeState extends State<Home> {
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: const Text(
-            'HOME',
-            style: TextStyle(color: Colors.white),
+          leading: IconButton(
+            onPressed: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
+            icon: const Icon(
+              Icons.filter_alt_rounded,
+              color: Colors.white,
+              weight: 500,
+              
+            ),
+          ),
+          title: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.show_chart_rounded,
+                weight: 700,
+                size: 30,
+                color: Colors.white,
+              ),
+              SizedBox(width: 5),
+              Text(
+                'Budget Buddy',
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
           backgroundColor: Colors.tealAccent[400],
-          centerTitle: true,
           actions: [
             IconButton(
-              onPressed: () {
-                _scaffoldKey.currentState?.openEndDrawer();
-              },
+              onPressed: () {},
               icon: const Icon(
-                Icons.filter_alt_rounded,
+                Icons.search,
                 color: Colors.white,
               ),
             ),
           ],
         ),
-        endDrawer: Drawer(
+        drawer: Drawer(
           child: ListView(
             children: [
               SizedBox(

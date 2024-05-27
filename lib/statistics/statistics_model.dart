@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:stream_transform/stream_transform.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expense_category.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income_category.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_category.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_category.dart';
 
 class StatisticsModel {
   final db = getIt<AppDatabase>();
@@ -49,7 +49,7 @@ class StatisticsModel {
     return incomesTotal().combineLatest(expensesTotal(), (p0, p1) => p0 - p1);
   }
 
-  Stream<PieChartData> expensesByCategory(DateTime date) {
+  Stream<PieChartData?> expensesByCategory(DateTime date) {
     return (db.expensesTable.select()
           ..where((tbl) =>
               tbl.date.month.equals(date.month) &
@@ -57,6 +57,10 @@ class StatisticsModel {
         .watch()
         .map((expenses) {
       var expensesTotalByCategory = <ExpenseCategory, double>{};
+
+      if (expenses.isEmpty) {
+        return null;
+      }
 
       final grandTotal = expenses
           .map((e) => e.expenseValue)

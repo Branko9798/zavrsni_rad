@@ -4,8 +4,8 @@ import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/home.dart';
 import 'package:zavrsni_rad/statistics/statistics_model.dart';
 import 'package:zavrsni_rad/statistics/statistics_screen.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expense_model.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income_model.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_model.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_model.dart';
 
 import 'package:get_it/get_it.dart';
 

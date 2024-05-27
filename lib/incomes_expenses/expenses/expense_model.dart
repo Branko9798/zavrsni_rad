@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/main.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expenses.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expenses.dart';
 
 class ExpensesModel {
   final db = getIt<AppDatabase>();

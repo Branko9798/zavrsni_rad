@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:zavrsni_rad/home.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/statistics/statistics_model.dart';
 
@@ -25,9 +26,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         ),
         centerTitle: true,
         backgroundColor: Colors.tealAccent[400],
-        leading: BackButton(
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         actions: [
           IconButton(
               onPressed: () async {
@@ -164,10 +162,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     );
                   }
                   if (snapshot.hasError) {
-                    return const SnackBar(
-                        content: Text('Oops, something went wrong'));
+                    print(snapshot.error);
+                    return const Text('Oops, something went wrong');
                   }
-                  var data = snapshot.requireData;
+                  var data = snapshot.data;
+
+                  if (data == null) {
+                    return const Center(
+                      child: Text("No data."),
+                    );
+                  }
+
                   data = data.copyWith(
                       centerSpaceColor: Colors.white,
                       borderData: FlBorderData(show: false),
@@ -179,7 +184,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   final double totalExpenses = snapshot.data!.sumValue;
                   return Stack(
                     children: [
-                      PieChart(data),
                       Positioned.fill(
                         child: Center(
                           child: Text(
@@ -287,9 +291,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         ),
                       );
                     }
+                    if (snapshot.data == null) {
+                      return const SizedBox(
+                        child: Text("No data"),
+                      );
+                    }
                     if (snapshot.hasError) {
                       return const SnackBar(
-                          content: Text('Oops, something went wrong'));
+                        content: Text('Oops, something went wrong'),
+                      );
                     } else {
                       return LineChart(snapshot.requireData);
                     }
@@ -333,6 +343,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showHomeScreen(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (BuildContext context) {
+          return Home();
+        },
       ),
     );
   }

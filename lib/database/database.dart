@@ -7,8 +7,8 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 // ignore: depend_on_referenced_packages
 import 'package:sqlite3/sqlite3.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expenses.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expenses.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 
 part 'database.g.dart';

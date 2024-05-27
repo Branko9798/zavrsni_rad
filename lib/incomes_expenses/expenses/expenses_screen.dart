@@ -1,57 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:zavrsni_rad/main.dart';
-import 'package:zavrsni_rad/revenues_expenses/expenses/expenses_screen.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income_category.dart';
-import 'package:zavrsni_rad/revenues_expenses/incomes/income_model.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_category.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_model.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expenses.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_screen.dart';
+import 'package:intl/intl.dart';
 import 'package:zavrsni_rad/statistics/statistics_model.dart';
 
-class IncomeScreen extends StatefulWidget {
-  IncomeScreen({super.key, this.incomeToEdit});
+class ExpensesScreen extends StatefulWidget {
+  const ExpensesScreen({super.key, this.expenseToEdit});
 
-  final Income? incomeToEdit;
+  final Expense? expenseToEdit;
 
   @override
-  State<IncomeScreen> createState() => _IncomeScreenState();
+  State<ExpensesScreen> createState() => _ExpensesScreenState();
 }
 
-class _IncomeScreenState extends State<IncomeScreen> {
-  final incomeModel = getIt<IncomeModel>();
-
-  String? selectedIconId;
-  String? selectedIconName;
-
-  DateFormat dateFormatter = DateFormat.yMd('hr');
-
-  final note = TextEditingController();
-  final incomeValue = TextEditingController();
-  final valueFocusNode = FocusNode();
-
-  DateTime date = DateTime.now();
+class _ExpensesScreenState extends State<ExpensesScreen> {
+  final expenseModel = getIt<ExpensesModel>();
 
   int? selectedIndex;
 
-  IncomeCategory? get selectedCategory =>
-      selectedIndex == null ? null : IncomeCategory.categories[selectedIndex!];
+  ExpenseCategory? get selectedCategory =>
+      selectedIndex == null ? null : ExpenseCategory.categories[selectedIndex!];
+
+  final note = TextEditingController();
+  final expensesValue = TextEditingController();
+  DateTime date = DateTime.now();
+  final valueFocusNode = FocusNode();
+
+  DateFormat dateFormatter = DateFormat.yMd('hr');
 
   @override
   void initState() {
-    selectedIndex = IncomeCategory.categories.indexWhere((element) =>
+    selectedIndex = ExpenseCategory.categories.indexWhere((element) =>
         element.id.toLowerCase() ==
-        widget.incomeToEdit?.incomeCategoryId.toLowerCase());
+        widget.expenseToEdit?.expensesCategoryId.toLowerCase());
 
     if (selectedIndex == -1) {
       selectedIndex = null;
     }
 
-    incomeValue.text = widget.incomeToEdit?.incomeValue.toString() ?? "";
-    note.text = widget.incomeToEdit?.incomeNote ?? "";
-    date = widget.incomeToEdit?.date ?? DateTime.now();
+    expensesValue.text = widget.expenseToEdit?.expenseValue.toString() ?? "";
+    note.text = widget.expenseToEdit?.expenseNote ?? "";
+    date = widget.expenseToEdit?.date ?? DateTime.now();
 
-    // TODO: implement initState
     super.initState();
   }
 
@@ -60,7 +55,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Incomes',
+          'Expenses',
           style: TextStyle(color: Colors.white),
         ),
         leading: const BackButton(
@@ -80,12 +75,10 @@ class _IncomeScreenState extends State<IncomeScreen> {
                   height: 35,
                   width: 90,
                   decoration: BoxDecoration(
-                      color: Colors.grey[800],
+                      color: Colors.grey[600],
                       borderRadius: BorderRadius.circular(10)),
                   child: TextButton(
-                    onPressed: () {
-                      _showExpenseScreen(context);
-                    },
+                    onPressed: () {},
                     child: const Text(
                       'Expenses',
                       style: TextStyle(color: Colors.white),
@@ -96,10 +89,12 @@ class _IncomeScreenState extends State<IncomeScreen> {
                   height: 35,
                   width: 90,
                   decoration: BoxDecoration(
-                      color: Colors.grey[600],
+                      color: Colors.grey[800],
                       borderRadius: BorderRadius.circular(10)),
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _showIncomeScreen(context);
+                    },
                     child: const Text(
                       'Income',
                       style: TextStyle(color: Colors.white),
@@ -111,10 +106,10 @@ class _IncomeScreenState extends State<IncomeScreen> {
           ),
           Expanded(
             child: GridView.builder(
-              itemCount: IncomeCategory.categories.length,
+              itemCount: ExpenseCategory.categories.length,
               padding: const EdgeInsets.symmetric(vertical: 20),
               itemBuilder: (context, index) {
-                final incomeCategory = IncomeCategory.categories[index];
+                final expenseCategory = ExpenseCategory.categories[index];
 
                 return Column(
                   children: [
@@ -137,9 +132,9 @@ class _IncomeScreenState extends State<IncomeScreen> {
                               });
                             },
                             icon: FaIcon(
-                              incomeCategory.icon,
+                              expenseCategory.icon,
                             ))),
-                    Text(incomeCategory.name),
+                    Text(expenseCategory.name),
                   ],
                 );
               },
@@ -151,12 +146,12 @@ class _IncomeScreenState extends State<IncomeScreen> {
             ),
           ),
           AnimatedContainer(
-            duration: selectedIndex == 0
+            duration: selectedIndex == null
                 ? const Duration(milliseconds: 500)
                 : const Duration(milliseconds: 250),
             color: Colors.grey[100],
             height: selectedIndex == null ? 0 : 300,
-            curve: selectedIndex == 0 ? Curves.easeInBack : Curves.easeIn,
+            curve: selectedIndex == null ? Curves.easeInBack : Curves.easeIn,
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: SingleChildScrollView(
@@ -166,6 +161,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                       children: <Widget>[
                         TextFormField(
                           controller: note,
+                          textInputAction: TextInputAction.go,
                           onFieldSubmitted: (value) {
                             saveButton();
                           },
@@ -180,7 +176,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
-                          controller: incomeValue,
+                          controller: expensesValue,
                           focusNode: valueFocusNode,
                           textInputAction: TextInputAction.go,
                           onFieldSubmitted: (value) {
@@ -191,14 +187,14 @@ class _IncomeScreenState extends State<IncomeScreen> {
                             border: const OutlineInputBorder(),
                             labelText: 'Price: ',
                             suffixIcon: IconButton(
-                              onPressed: incomeValue.clear,
+                              onPressed: expensesValue.clear,
                               icon: const Icon(Icons.clear),
                             ),
                           ),
                         ),
                         const SizedBox(height: 20),
                         Align(
-                          alignment: Alignment.bottomLeft,
+                          alignment: Alignment.centerLeft,
                           child: TextButton(
                             onPressed: () async {
                               final selectedDate = await showDatePicker(
@@ -253,11 +249,11 @@ class _IncomeScreenState extends State<IncomeScreen> {
     );
   }
 
-  void _showExpenseScreen(BuildContext context) {
+  void _showIncomeScreen(BuildContext context) {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder<void>(
         pageBuilder: (context, animation1, animation2) {
-          return ExpensesScreen();
+          return IncomeScreen();
         },
         transitionDuration: Duration.zero,
       ),
@@ -269,17 +265,17 @@ class _IncomeScreenState extends State<IncomeScreen> {
       // TODO: Show error
       return;
     }
-    final incomeDb = Income(
-      widget.incomeToEdit?.id ?? Uuid().v4(),
+    final expenseDb = Expense(
+      widget.expenseToEdit?.id ?? Uuid().v4(),
       note.text,
-      double.parse(incomeValue.value.text),
+      double.parse(expensesValue.text),
       selectedCategory!.id,
       date.startOfDay,
     );
-    if (widget.incomeToEdit == null) {
-      incomeModel.addIncome(incomeDb);
+    if (widget.expenseToEdit == null) {
+      expenseModel.addExpense(expenseDb);
     } else {
-      incomeModel.updateIncome(incomeDb);
+      expenseModel.updateExpenses(expenseDb);
     }
     Navigator.pop(context);
   }
