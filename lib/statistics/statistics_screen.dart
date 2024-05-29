@@ -1,6 +1,14 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zavrsni_rad/home.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_model.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expenses.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expenses_screen.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_model.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_screen.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/statistics/statistics_model.dart';
 
@@ -18,332 +26,1053 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Widget build(BuildContext context) {
     final statisticsModel = getIt<StatisticsModel>();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Statistics',
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.tealAccent[400],
-        actions: [
-          IconButton(
-              onPressed: () async {
-                var selectedDate = await showDatePicker(
-                  context: context,
-                  initialDate: date,
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime(3000),
-                );
-                setState(() {
-                  if (selectedDate != null) {
-                    date = selectedDate;
-                  }
-                });
-              },
-              icon: const Icon(
-                Icons.date_range_outlined,
-                color: Colors.white,
-              ))
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+          appBar: AppBar(
+            title: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 40,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border:
-                            const Border(top: BorderSide(color: Colors.white)),
-                        color: Colors.tealAccent[400],
-                      ),
-                      child: Row(
-                        children: <Widget>[
-                          const Expanded(
-                            flex: 2,
-                            child: Row(
+                Icon(
+                  Icons.area_chart_rounded,
+                  color: Colors.white,
+                ),
+                SizedBox(width: 5),
+                Text(
+                  'Statistics',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.tealAccent[400],
+            actions: [
+              IconButton(
+                onPressed: () async {
+                  var selectedDate = await showDatePicker(
+                    context: context,
+                    initialDate: date,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(3000),
+                  );
+                  setState(() {
+                    if (selectedDate != null) {
+                      date = selectedDate;
+                    }
+                  });
+                },
+                icon: const Icon(
+                  Icons.date_range_outlined,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+            bottom: const TabBar(tabs: [
+              Tab(
+                icon: (FaIcon(
+                  FontAwesomeIcons.moneyBill1Wave,
+                  color: Colors.white,
+                  size: 20,
+                )),
+                child: Row(
+                  children: [
+                    Text(
+                      "Income ",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Icon(
+                      Icons.pie_chart_outline,
+                      color: Colors.white,
+                      size: 12,
+                    ),
+                  ],
+                ),
+              ),
+              Tab(
+                icon: (FaIcon(
+                  FontAwesomeIcons.moneyBillTrendUp,
+                  color: Colors.white,
+                  size: 20,
+                )),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Income ",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Icon(
+                      Icons.area_chart_outlined,
+                      color: Colors.white,
+                      size: 12,
+                    ),
+                  ],
+                ),
+              ),
+              Tab(
+                icon: (FaIcon(
+                  FontAwesomeIcons.circleDollarToSlot,
+                  color: Colors.white,
+                  size: 20,
+                )),
+                child: Row(
+                  children: [
+                    Text(
+                      "Expense ",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Icon(
+                      Icons.pie_chart_outline,
+                      color: Colors.white,
+                      size: 12,
+                    ),
+                  ],
+                ),
+              ),
+              Tab(
+                icon: (FaIcon(
+                  FontAwesomeIcons.moneyCheckDollar,
+                  color: Colors.white,
+                  size: 20,
+                )),
+                child: Row(
+                  children: [
+                    Text(
+                      "Expense ",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Icon(
+                      Icons.area_chart_outlined,
+                      color: Colors.white,
+                      size: 12,
+                    ),
+                  ],
+                ),
+              ),
+            ]),
+          ),
+          body: TabBarView(
+            children: [
+              Column(
+                children: [
+                  const ListTile(
+                    title: Text(
+                      "TOTAL INCOMES",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    subtitle: Text("Pie Chart"),
+                  ),
+                  Container(
+                    height: 300,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.black, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4.0,
+                          offset: Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                    child: StreamBuilder(
+                      stream: statisticsModel.incomesByCategory(date),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: SizedBox(
+                              height: 30,
+                              width: 30,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                              ),
+                            ),
+                          );
+                        }
+                        if (snapshot.hasError) {
+                          return const SnackBar(
+                              content: Text('Oops, something went wrong'));
+                        }
+                        var data = snapshot.data;
+
+                        if (data == null) {
+                          return const Center(
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  size: 48.0,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 16.0),
                                 Text(
-                                  '',
-                                  textAlign: TextAlign.end,
+                                  "No data.",
                                   style: TextStyle(
+                                    fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    color: Colors.white,
+                                    color: Colors.grey,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          const VerticalDivider(
-                            indent: 0,
-                            color: Colors.white,
-                          ),
-                          Expanded(
-                            flex: 3,
-                            child: StreamBuilder(
-                                stream: statisticsModel.total(),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return const SizedBox();
-                                  }
-                                  if (snapshot.hasError) {
-                                    return const SnackBar(
-                                        content:
-                                            Text('Oops, something went wrong'));
-                                  }
+                          );
+                        }
+                        data = data.copyWith(
+                          centerSpaceColor: Colors.white,
+                          borderData: FlBorderData(show: false),
+                          sectionsSpace: 0,
+                          centerSpaceRadius: 70,
+                        );
+                        final double totalIncomes = snapshot.data!.sumValue;
+                        return Stack(
+                          children: [
+                            PieChart(data),
+                            Positioned.fill(
+                              child: Center(
+                                child: Text(
+                                  "Incomes: ${totalIncomes.toStringAsFixed(2)}",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: legendForCharts(data),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 40,
+                    child: Divider(
+                      indent: 10,
+                      endIndent: 10,
+                    ),
+                  ),
+                  Expanded(
+                    child: StreamBuilder(
+                      stream: getIt<IncomeModel>().allIncomesStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return const SnackBar(
+                              content: Text('Oops, something went wrong'));
+                        }
 
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                        return ListView.builder(
+                          itemBuilder: (context, index) {
+                            final sortedIncomes =
+                                List<Income>.from(snapshot.data!);
+                            sortedIncomes
+                                .sort((a, b) => a.date.compareTo(b.date));
+
+                            final income = sortedIncomes[index];
+
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.calendar_today,
+                                          color: Colors.grey, size: 16),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        "${income.date.day}/${income.date.month}/${income.date.year}",
+                                        style:
+                                            const TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0),
+                                  child: Card(
+                                    color: Colors.tealAccent[200],
+                                    child: InkWell(
+                                      onLongPress: () {},
+                                      child: Row(
+                                        children: [
+                                          PopupMenuButton(
+                                              itemBuilder: ((context) => [
+                                                    PopupMenuItem(
+                                                      child: ListTile(
+                                                        leading: const Icon(
+                                                            Icons.edit),
+                                                        title:
+                                                            const Text("Edit"),
+                                                        onTap: () {
+                                                          _showIncomesScreen(
+                                                              context,
+                                                              incomeToEdit:
+                                                                  income);
+                                                        },
+                                                      ),
+                                                    ),
+                                                    PopupMenuItem(
+                                                      child: ListTile(
+                                                        leading: const Icon(
+                                                            Icons.delete),
+                                                        title: const Text(
+                                                            "Remove"),
+                                                        onTap: () {
+                                                          IncomeModel()
+                                                              .removeIncome(
+                                                                  income);
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                    )
+                                                  ])),
+                                          Expanded(
+                                            flex: 3,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  income.incomeNote,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  '+${income.incomeValue} €',
+                                                  style: const TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 13,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Container(
+                                              decoration: const BoxDecoration(
+                                                borderRadius: BorderRadius.only(
+                                                  topRight: Radius.circular(15),
+                                                  bottomRight:
+                                                      Radius.circular(15),
+                                                ),
+                                              ),
+                                              child: Center(
+                                                  child: FaIcon(
+                                                      income.category!.icon)),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 7),
+                              ],
+                            );
+                          },
+                          itemCount: snapshot.data?.length ?? 0,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  const ListTile(
+                    title: Text(
+                      "INCOMES",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    subtitle: Text(
+                      "Line Chart",
+                    ),
+                  ),
+                  Container(
+                    height: 300,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.black, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4.0,
+                          offset: Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: StreamBuilder(
+                        stream: statisticsModel.incomeLineChartPoints(date),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                            );
+                          }
+                          if (snapshot.data == null) {
+                            return const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    size: 48.0,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  Text(
+                                    "No data.",
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          if (snapshot.hasError) {
+                            return const SnackBar(
+                              content: Text('Oops, something went wrong'),
+                            );
+                          } else {
+                            return LineChart(snapshot.data!);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 40,
+                    child: Divider(
+                      indent: 10,
+                      endIndent: 10,
+                    ),
+                  ),
+                  Expanded(
+                    child: StreamBuilder(
+                      stream: getIt<IncomeModel>().allIncomesStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return const SnackBar(
+                              content: Text('Oops, something went wrong'));
+                        }
+
+                        return ListView.builder(
+                          itemBuilder: (context, index) {
+                            final sortedIncomes =
+                                List<Income>.from(snapshot.data!);
+                            sortedIncomes
+                                .sort((a, b) => a.date.compareTo(b.date));
+
+                            final income = sortedIncomes[index];
+
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.calendar_today,
+                                          color: Colors.grey, size: 16),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        "${income.date.day}/${income.date.month}/${income.date.year}",
+                                        style:
+                                            const TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0),
+                                  child: Card(
+                                    color: Colors.tealAccent[200],
+                                    child: InkWell(
+                                      onLongPress: () {},
+                                      child: Row(
+                                        children: [
+                                          PopupMenuButton(
+                                              itemBuilder: ((context) => [
+                                                    PopupMenuItem(
+                                                      child: ListTile(
+                                                        leading: const Icon(
+                                                            Icons.edit),
+                                                        title:
+                                                            const Text("Edit"),
+                                                        onTap: () {
+                                                          _showIncomesScreen(
+                                                              context,
+                                                              incomeToEdit:
+                                                                  income);
+                                                        },
+                                                      ),
+                                                    ),
+                                                    PopupMenuItem(
+                                                      child: ListTile(
+                                                        leading: const Icon(
+                                                            Icons.delete),
+                                                        title: const Text(
+                                                            "Remove"),
+                                                        onTap: () {
+                                                          IncomeModel()
+                                                              .removeIncome(
+                                                                  income);
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                    )
+                                                  ])),
+                                          Expanded(
+                                            flex: 3,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  income.incomeNote,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  '+${income.incomeValue} €',
+                                                  style: const TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 13,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Container(
+                                              decoration: const BoxDecoration(
+                                                borderRadius: BorderRadius.only(
+                                                  topRight: Radius.circular(15),
+                                                  bottomRight:
+                                                      Radius.circular(15),
+                                                ),
+                                              ),
+                                              child: Center(
+                                                  child: FaIcon(
+                                                      income.category!.icon)),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 7),
+                              ],
+                            );
+                          },
+                          itemCount: snapshot.data?.length ?? 0,
+                        );
+                      },
+                    ),
+                  )
+                ],
+              ),
+              Column(
+                children: [
+                  const ListTile(
+                    title: Text(
+                      "TOTAL EXPENSES",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    subtitle: Text("Pie Chart"),
+                  ),
+                  Container(
+                    height: 300,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.black, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4.0,
+                          offset: Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                    child: StreamBuilder(
+                      stream: statisticsModel.expensesByCategory(date),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: SizedBox(
+                              height: 30,
+                              width: 30,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                              ),
+                            ),
+                          );
+                        }
+                        if (snapshot.hasError) {
+                          return const Text('Oops, something went wrong');
+                        }
+                        var data = snapshot.data;
+
+                        if (data == null) {
+                          return const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  size: 48.0,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  "No data.",
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        data = data.copyWith(
+                            centerSpaceColor: Colors.white,
+                            borderData: FlBorderData(show: false),
+                            sectionsSpace: 0,
+                            centerSpaceRadius: 70,
+                            sections: data.sections
+                                .map((e) => e.copyWith(showTitle: true))
+                                .toList());
+                        final double totalExpenses = snapshot.data!.sumValue;
+                        return Stack(
+                          children: [
+                            PieChart(data),
+                            Positioned.fill(
+                              child: Center(
+                                child: Text(
+                                  "Expenses: ${totalExpenses.toStringAsFixed(2)}",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: legendForCharts(data),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 40,
+                    child: Divider(
+                      indent: 10,
+                      endIndent: 10,
+                    ),
+                  ),
+                  Expanded(
+                    child: StreamBuilder(
+                      stream: getIt<ExpensesModel>().allExpensesStream,
+                      builder: (context, snapshot) {
+                        return ListView.builder(
+                          itemBuilder: (context, index) {
+                            if (snapshot.hasError) {
+                              return const SnackBar(
+                                  content: Text('Oops, something went wrong'));
+                            }
+                            final sortedExpenses =
+                                List<Expense>.from(snapshot.data!);
+                            sortedExpenses
+                                .sort((a, b) => a.date.compareTo(b.date));
+                            final expense = sortedExpenses[index];
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      const Icon(Icons.calendar_today,
+                                          color: Colors.grey, size: 16),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        "${expense.date.day}/${expense.date.month}/${expense.date.year}",
+                                        style:
+                                            const TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Card(
+                                  color: Colors.redAccent[100],
+                                  child: InkWell(
+                                    onLongPress: () {},
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(
-                                          "BALANCE: ${snapshot.data}",
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
+                                      children: [
+                                        PopupMenuButton(
+                                            itemBuilder: ((context) => [
+                                                  PopupMenuItem(
+                                                    child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.edit),
+                                                      title: const Text("Edit"),
+                                                      onTap: () {
+                                                        _showExpenseScreen(
+                                                            context,
+                                                            expenseToEdit:
+                                                                expense);
+                                                      },
+                                                    ),
+                                                  ),
+                                                  PopupMenuItem(
+                                                    child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.delete),
+                                                      title:
+                                                          const Text("Remove"),
+                                                      onTap: () {
+                                                        ExpensesModel()
+                                                            .removeExpense(
+                                                                expense);
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                  )
+                                                ])),
+                                        Expanded(
+                                          flex: 3,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                expense.expenseNote,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                '-${expense.expenseValue} €',
+                                                style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 13,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                topRight: Radius.circular(15),
+                                                bottomRight:
+                                                    Radius.circular(15),
+                                              ),
+                                            ),
+                                            child: Center(
+                                                child: FaIcon(
+                                                    expense.category!.icon)),
                                           ),
                                         ),
                                       ],
                                     ),
-                                  );
-                                }),
-                          ),
-                          const VerticalDivider(
-                            indent: 0,
-                            color: Colors.white,
-                          ),
-                          const Expanded(
-                              flex: 2,
-                              child: Text(
-                                '',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontSize: 15,
+                                  ),
                                 ),
-                              ))
-                        ],
+                                const SizedBox(height: 7),
+                              ],
+                            );
+                          },
+                          itemCount: snapshot.data?.length ?? 0,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  const ListTile(
+                    title: Text(
+                      "EXPENSES",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    subtitle: Text("Line Chart"),
+                  ),
+                  Container(
+                    height: 300,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.black, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4.0,
+                          offset: Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: StreamBuilder(
+                        stream: statisticsModel.expenseLineChartPoints(date),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                            );
+                          }
+
+                          if (snapshot.data == null) {
+                            return const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    size: 48.0,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  Text(
+                                    "No data.",
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            return LineChart(snapshot.data!);
+                          }
+                        },
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 15),
-            Container(
-              height: 300,
-              width: 400,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                border: Border.all(color: Colors.black, width: 1.0),
+                  const SizedBox(
+                    height: 40,
+                    child: Divider(
+                      indent: 10,
+                      endIndent: 10,
+                    ),
+                  ),
+                  Expanded(
+                    child: StreamBuilder(
+                      stream: getIt<ExpensesModel>().allExpensesStream,
+                      builder: (context, snapshot) {
+                        return ListView.builder(
+                          itemBuilder: (context, index) {
+                            if (snapshot.hasError) {
+                              return const SnackBar(
+                                  content: Text('Oops, something went wrong'));
+                            }
+                            final sortedExpenses =
+                                List<Expense>.from(snapshot.data!);
+                            sortedExpenses
+                                .sort((a, b) => a.date.compareTo(b.date));
+                            final expense = sortedExpenses[index];
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      const Icon(Icons.calendar_today,
+                                          color: Colors.grey, size: 16),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        "${expense.date.day}/${expense.date.month}/${expense.date.year}",
+                                        style:
+                                            const TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Card(
+                                  color: Colors.redAccent[100],
+                                  child: InkWell(
+                                    onLongPress: () {},
+                                    child: Row(
+                                      children: [
+                                        PopupMenuButton(
+                                            itemBuilder: ((context) => [
+                                                  PopupMenuItem(
+                                                    child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.edit),
+                                                      title: const Text("Edit"),
+                                                      onTap: () {
+                                                        _showExpenseScreen(
+                                                            context,
+                                                            expenseToEdit:
+                                                                expense);
+                                                      },
+                                                    ),
+                                                  ),
+                                                  PopupMenuItem(
+                                                    child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.delete),
+                                                      title:
+                                                          const Text("Remove"),
+                                                      onTap: () {
+                                                        ExpensesModel()
+                                                            .removeExpense(
+                                                                expense);
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                  )
+                                                ])),
+                                        Expanded(
+                                          flex: 3,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                expense.expenseNote,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                '-${expense.expenseValue} €',
+                                                style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 13,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                topRight: Radius.circular(15),
+                                                bottomRight:
+                                                    Radius.circular(15),
+                                              ),
+                                            ),
+                                            child: Center(
+                                                child: FaIcon(
+                                                    expense.category!.icon)),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 7),
+                              ],
+                            );
+                          },
+                          itemCount: snapshot.data?.length ?? 0,
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-              child: StreamBuilder(
-                stream: statisticsModel.expensesByCategory(date),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                        ),
-                      ),
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    print(snapshot.error);
-                    return const Text('Oops, something went wrong');
-                  }
-                  var data = snapshot.data;
-
-                  if (data == null) {
-                    return const Center(
-                      child: Text("No data."),
-                    );
-                  }
-
-                  data = data.copyWith(
-                      centerSpaceColor: Colors.white,
-                      borderData: FlBorderData(show: false),
-                      sectionsSpace: 0,
-                      centerSpaceRadius: 70,
-                      sections: data.sections
-                          .map((e) => e.copyWith(showTitle: true))
-                          .toList());
-                  final double totalExpenses = snapshot.data!.sumValue;
-                  return Stack(
-                    children: [
-                      Positioned.fill(
-                        child: Center(
-                          child: Text(
-                            "Expenses: ${totalExpenses.toStringAsFixed(2)}",
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: legendForCharts(data),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              height: 300,
-              width: 400,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                border: Border.all(color: Colors.black, width: 1.0),
-              ),
-              child: StreamBuilder(
-                stream: statisticsModel.incomesByCategory(date),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                        ),
-                      ),
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    return const SnackBar(
-                        content: Text('Oops, something went wrong'));
-                  }
-                  var data = snapshot.requireData;
-                  data = data.copyWith(
-                    centerSpaceColor: Colors.white,
-                    borderData: FlBorderData(show: false),
-                    sectionsSpace: 0,
-                    centerSpaceRadius: 70,
-                  );
-                  final double totalIncomes = snapshot.data!.sumValue;
-                  return Stack(
-                    children: [
-                      PieChart(data),
-                      Positioned.fill(
-                        child: Center(
-                          child: Text(
-                            "Incomes: ${totalIncomes.toStringAsFixed(2)}",
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: legendForCharts(data),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              height: 300,
-              width: 400,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                border: Border.all(color: Colors.black, width: 1.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: StreamBuilder(
-                  stream: statisticsModel.incomeLineChartPoints(date),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                          ),
-                        ),
-                      );
-                    }
-                    if (snapshot.data == null) {
-                      return const SizedBox(
-                        child: Text("No data"),
-                      );
-                    }
-                    if (snapshot.hasError) {
-                      return const SnackBar(
-                        content: Text('Oops, something went wrong'),
-                      );
-                    } else {
-                      return LineChart(snapshot.requireData);
-                    }
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              height: 300,
-              width: 400,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                border: Border.all(color: Colors.black, width: 1.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: StreamBuilder(
-                  stream: statisticsModel.expenseLineChartPoints(date),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                          ),
-                        ),
-                      );
-                    }
-                    if (snapshot.hasError) {
-                      return const SnackBar(
-                          content: Text('Oops, something went wrong'));
-                    } else {
-                      return LineChart(snapshot.requireData);
-                    }
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          )),
     );
   }
 
@@ -353,6 +1082,38 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         fullscreenDialog: true,
         builder: (BuildContext context) {
           return Home();
+        },
+      ),
+    );
+  }
+
+  void _showIncomesScreen(
+    BuildContext context, {
+    Income? incomeToEdit = null,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (BuildContext context) {
+          return IncomeScreen(
+            incomeToEdit: incomeToEdit,
+          );
+        },
+      ),
+    );
+  }
+
+  void _showExpenseScreen(
+    BuildContext context, {
+    Expense? expenseToEdit = null,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (BuildContext context) {
+          return ExpensesScreen(
+            expenseToEdit: expenseToEdit,
+          );
         },
       ),
     );

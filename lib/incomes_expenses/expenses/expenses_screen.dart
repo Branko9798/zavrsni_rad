@@ -63,6 +63,26 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         ),
         centerTitle: true,
         backgroundColor: Colors.tealAccent[400],
+        actions: [
+          TextButton(
+            onPressed: () {
+              saveButton();
+            },
+            child: const Row(
+              children: <Widget>[
+                Icon(
+                  Icons.save,
+                  color: Colors.white,
+                ),
+                SizedBox(width: 5),
+                Text(
+                  "SAVE",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -262,7 +282,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
   void saveButton() {
     if (selectedCategory == null) {
-      // TODO: Show error
+      const SnackBar(
+        content: Text("Empty input"),
+      );
       return;
     }
     final expenseDb = Expense(

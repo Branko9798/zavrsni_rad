@@ -44,7 +44,6 @@ class _HomeState extends State<Home> {
               Icons.filter_alt_rounded,
               color: Colors.white,
               weight: 500,
-              
             ),
           ),
           title: const Row(
@@ -178,35 +177,36 @@ class _HomeState extends State<Home> {
                             color: Colors.white,
                           ),
                           Expanded(
-                              flex: 2,
-                              child: StreamBuilder(
-                                stream: statisticModel.total(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasError) {
-                                    return const SnackBar(
-                                        content:
-                                            Text('Oops, something went wrong'));
-                                  } else {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(
-                                            "BALANCE: ${snapshot.data}",
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                            flex: 2,
+                            child: StreamBuilder(
+                              stream: statisticModel.total(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return const SnackBar(
+                                      content:
+                                          Text('Oops, something went wrong'));
+                                } else {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text(
+                                          "BALANCE: ${snapshot.data}",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
                                           ),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                },
-                              )),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
                           const VerticalDivider(
                             indent: 0,
                             color: Colors.white,
@@ -403,7 +403,7 @@ class _HomeState extends State<Home> {
                                   ),
                                 ),
                                 Card(
-                                  color: Colors.deepOrange[200],
+                                  color: Colors.redAccent[100],
                                   child: InkWell(
                                     onLongPress: () {},
                                     child: Row(

@@ -68,6 +68,26 @@ class _IncomeScreenState extends State<IncomeScreen> {
         ),
         centerTitle: true,
         backgroundColor: Colors.tealAccent[400],
+        actions: [
+          TextButton(
+            onPressed: () {
+              saveButton();
+            },
+            child: const Row(
+              children: <Widget>[
+                Icon(
+                  Icons.save,
+                  color: Colors.white,
+                ),
+                SizedBox(width: 5),
+                Text(
+                  "SAVE",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[

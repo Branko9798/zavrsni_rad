@@ -97,7 +97,7 @@ class StatisticsModel {
     });
   }
 
-  Stream<PieChartData> incomesByCategory(DateTime date) {
+  Stream<PieChartData?> incomesByCategory(DateTime date) {
     return (db.incomesTable.select()
           ..where((tbl) =>
               tbl.date.month.equals(date.month) &
@@ -105,6 +105,10 @@ class StatisticsModel {
         .watch()
         .map((incomes) {
       var incomesTotalByCategory = <IncomeCategory, double>{};
+
+      if (incomes.isEmpty) {
+        return null;
+      }
 
       final grandTotal = incomes
           .map((e) => e.incomeValue)
@@ -141,7 +145,7 @@ class StatisticsModel {
     });
   }
 
-  Stream<LineChartData> incomeLineChartPoints(DateTime date) {
+  Stream<LineChartData?> incomeLineChartPoints(DateTime date) {
     final db = getIt<AppDatabase>();
     return (db.incomesTable.select()
           ..where((tbl) =>
@@ -167,6 +171,10 @@ class StatisticsModel {
               ))
           .sorted((a, b) => a.x.compareTo(b.x))
           .toList();
+
+      if (incomes.isEmpty) {
+        return null;
+      }
 
       return LineChartData(
         minY: 0,
@@ -212,7 +220,7 @@ class StatisticsModel {
     });
   }
 
-  Stream<LineChartData> expenseLineChartPoints(DateTime date) {
+  Stream<LineChartData?> expenseLineChartPoints(DateTime date) {
     final db = getIt<AppDatabase>();
     return (db.expensesTable.select()
           ..where((tbl) =>
@@ -238,6 +246,10 @@ class StatisticsModel {
               ))
           .sorted((a, b) => a.x.compareTo(b.x))
           .toList();
+
+      if (expenseData.isEmpty) {
+        return null;
+      }
 
       return LineChartData(
         minY: 0,
