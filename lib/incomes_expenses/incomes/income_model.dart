@@ -14,6 +14,12 @@ class IncomeModel {
         .watch();
   }
 
+  Stream<List<Income>> searchIncomes(String searchQuery) {
+    return (db.incomesTable.select()
+          ..where((tbl) => tbl.incomeNote.contains(searchQuery)))
+        .watch();
+  }
+
   void addIncome(Income income) async {
     await db.incomesTable.insert().insert(income);
   }

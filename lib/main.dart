@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/home.dart';
@@ -8,7 +9,6 @@ import 'package:zavrsni_rad/incomes_expenses/expenses/expense_model.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income_model.dart';
 
 import 'package:get_it/get_it.dart';
-
 
 GetIt getIt = GetIt.instance;
 
@@ -47,6 +47,7 @@ class _MyAppState extends State<MyApp> {
           brightness: Brightness.dark,
         ),
       ),
+      themeMode: ThemeMode.light,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 2, 103, 142),

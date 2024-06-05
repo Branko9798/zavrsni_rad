@@ -49,6 +49,25 @@ class StatisticsModel {
     return incomesTotal().combineLatest(expensesTotal(), (p0, p1) => p0 - p1);
   }
 
+  Stream<Map<String, double>> averageValuesForCurrentMonth() {
+    final DateTime now = DateTime.now();
+    final int daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+
+    final incomeTotalStream = incomesTotal();
+    final expenseTotalStream = expensesTotal();
+
+    return incomeTotalStream.combineLatest(expenseTotalStream,
+        (incomeTotal, expenseTotal) {
+      final double averageIncome = incomeTotal / daysInMonth;
+      final double averageExpense = expenseTotal / daysInMonth;
+
+      return {
+        'averageIncome': averageIncome,
+        'averageExpense': averageExpense,
+      };
+    });
+  }
+
   Stream<PieChartData?> expensesByCategory(DateTime date) {
     return (db.expensesTable.select()
           ..where((tbl) =>
@@ -142,6 +161,35 @@ class StatisticsModel {
       ).toList();
 
       return PieChartData(sections: sectionData);
+    });
+  }
+
+  Stream<PieChartData?> incomeExpensePieChart(DateTime date) {
+    return incomesTotal().combineLatest(expensesTotal(),
+        (incomeTotal, expenseTotal) {
+      final List<PieChartSectionData> sections = [];
+
+      if (incomeTotal > 0) {
+        sections.add(PieChartSectionData(
+          value: incomeTotal,
+          title:
+              '${((incomeTotal / (incomeTotal + expenseTotal)) * 100).toStringAsFixed(0)}%',
+          color: Colors.green,
+          titleStyle: const TextStyle(color: Colors.white),
+        ));
+      }
+
+      if (expenseTotal > 0) {
+        sections.add(PieChartSectionData(
+          value: expenseTotal,
+          title:
+              '${((expenseTotal / (incomeTotal + expenseTotal)) * 100).toStringAsFixed(0)}%',
+          color: Colors.red,
+          titleStyle: const TextStyle(color: Colors.white),
+        ));
+      }
+
+      return PieChartData(sections: sections);
     });
   }
 

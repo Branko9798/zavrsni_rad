@@ -176,7 +176,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                 : const Duration(milliseconds: 250),
             color: Colors.grey[100],
             height: selectedIndex == null ? 0 : 300,
-            curve: selectedIndex == 0 ? Curves.easeInBack : Curves.easeIn,
+            curve: selectedIndex == null ? Curves.easeInBack : Curves.easeIn,
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: SingleChildScrollView(

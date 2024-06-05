@@ -27,6 +27,8 @@ class _HomeState extends State<Home> {
 
   File? image;
   String? selectedCategory;
+  String? searchQuery; // Search state
+  var isSearching = false;
   final statisticModel = getIt<StatisticsModel>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool loading = false;
@@ -46,27 +48,46 @@ class _HomeState extends State<Home> {
               weight: 500,
             ),
           ),
-          title: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.show_chart_rounded,
-                weight: 700,
-                size: 30,
-                color: Colors.white,
-              ),
-              SizedBox(width: 5),
-              Text(
-                'Budget Buddy',
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+          title: isSearching
+              ? SizedBox(
+                  height: 40,
+                  child: SearchBar(
+                    onChanged: (value) {
+                      setState(() {
+                        searchQuery = value;
+                      });
+                    },
+                    autoFocus: true,
+                  ),
+                )
+              : const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.show_chart_rounded,
+                      weight: 700,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      'Budget Buddy',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
           backgroundColor: Colors.tealAccent[400],
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  isSearching = !isSearching;
+                  if (!isSearching) {
+                    searchQuery = null;
+                  }
+                });
+              },
               icon: const Icon(
                 Icons.search,
                 color: Colors.white,
@@ -235,10 +256,24 @@ class _HomeState extends State<Home> {
                 children: [
                   Expanded(
                     child: StreamBuilder(
-                      stream: selectedCategory == null
-                          ? getIt<IncomeModel>().allIncomesStream
-                          : getIt<IncomeModel>()
-                              .filteredIncomes([selectedCategory!]),
+                      stream: () {
+                        switch ((
+                          selectedCategory == null,
+                          searchQuery == null || searchQuery!.isEmpty
+                        )) {
+                          case (true, true):
+                            return getIt<IncomeModel>().allIncomesStream;
+                          case (false, true):
+                            return getIt<IncomeModel>()
+                                .filteredIncomes([selectedCategory!]);
+                          case (true, false):
+                            return getIt<IncomeModel>()
+                                .searchIncomes(searchQuery!);
+                          case (false, false):
+                            return getIt<IncomeModel>()
+                                .searchIncomes(searchQuery!);
+                        }
+                      }(),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           return const SnackBar(
@@ -367,10 +402,24 @@ class _HomeState extends State<Home> {
                   ),
                   Expanded(
                     child: StreamBuilder(
-                      stream: selectedCategory == null
-                          ? getIt<ExpensesModel>().allExpensesStream
-                          : getIt<ExpensesModel>()
-                              .filteredExpenses([selectedCategory!]),
+                      stream: () {
+                        switch ((
+                          selectedCategory == null,
+                          searchQuery == null || searchQuery!.isEmpty
+                        )) {
+                          case (true, true):
+                            return getIt<ExpensesModel>().allExpensesStream;
+                          case (false, true):
+                            return getIt<ExpensesModel>()
+                                .filteredExpenses([selectedCategory!]);
+                          case (true, false):
+                            return getIt<ExpensesModel>()
+                                .searchExpenses(searchQuery!);
+                          case (false, false):
+                            return getIt<ExpensesModel>()
+                                .searchExpenses(searchQuery!);
+                        }
+                      }(),
                       builder: (context, snapshot) {
                         return ListView.builder(
                           itemBuilder: (context, index) {
@@ -403,7 +452,7 @@ class _HomeState extends State<Home> {
                                   ),
                                 ),
                                 Card(
-                                  color: Colors.redAccent[100],
+                                  color: Colors.red[100],
                                   child: InkWell(
                                     onLongPress: () {},
                                     child: Row(

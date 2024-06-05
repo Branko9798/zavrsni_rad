@@ -14,6 +14,12 @@ class ExpensesModel {
         .watch();
   }
 
+    Stream<List<Expense>> searchExpenses(String searchQuery) {
+    return (db.expensesTable.select()
+          ..where((tbl) => tbl.expenseNote.contains(searchQuery)))
+        .watch();
+  }
+
   void addExpense(Expense expense) async {
     await db.expensesTable.insert().insert(expense);
   }
