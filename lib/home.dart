@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:path/path.dart';
 
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expense_category.dart';
@@ -14,6 +16,9 @@ import 'package:zavrsni_rad/incomes_expenses/incomes/income_category.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income_model.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income_screen.dart';
 import 'package:zavrsni_rad/statistics/statistics_model.dart';
+import 'package:zavrsni_rad/user/user.dart';
+import 'package:zavrsni_rad/user/user_input_screen.dart';
+import 'package:zavrsni_rad/user/user_model.dart';
 
 class Home extends StatefulWidget {
   Home({super.key});
@@ -32,6 +37,8 @@ class _HomeState extends State<Home> {
   final statisticModel = getIt<StatisticsModel>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool loading = false;
+
+  final userModel = getIt<UserModel>();
 
   @override
   Widget build(BuildContext context) {
@@ -96,66 +103,117 @@ class _HomeState extends State<Home> {
           ],
         ),
         drawer: Drawer(
-          child: ListView(
+          child: Column(
             children: [
               SizedBox(
-                height: 75,
+                height: 100,
                 child: DrawerHeader(
                   decoration: BoxDecoration(color: Colors.tealAccent[400]),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'FILTERS ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
+                      StreamBuilder(
+                        stream: userModel.getUserStream(),
+                        builder: (context, snapshot) {
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    snapshot.data?.firstName ?? "",
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    snapshot.data?.lastName ?? "",
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        },
+                      )
                     ],
                   ),
                 ),
               ),
-              ExpansionTile(
-                title: const Text('Incomes'),
-                children: [
-                  for (var incomeCategory in IncomeCategory.categories)
-                    ListTile(
-                      title: Text(incomeCategory.name),
-                      onTap: () {
-                        setState(() {
-                          if (selectedCategory == incomeCategory.id) {
-                            selectedCategory = null;
-                          } else {
-                            selectedCategory = incomeCategory.id;
-                          }
-                        });
-                        Navigator.of(context).pop();
-                      },
-                      tileColor: selectedCategory == incomeCategory.id
-                          ? Colors.grey.withOpacity(0.3)
-                          : null,
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    ExpansionTile(
+                      title: const Text('Incomes'),
+                      children: [
+                        for (var incomeCategory in IncomeCategory.categories)
+                          ListTile(
+                            title: Text(incomeCategory.name),
+                            onTap: () {
+                              setState(() {
+                                if (selectedCategory == incomeCategory.id) {
+                                  selectedCategory = null;
+                                } else {
+                                  selectedCategory = incomeCategory.id;
+                                }
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            tileColor: selectedCategory == incomeCategory.id
+                                ? Colors.grey.withOpacity(0.3)
+                                : null,
+                          ),
+                      ],
                     ),
-                ],
+                    ExpansionTile(
+                      title: const Text('Expenses'),
+                      children: [
+                        for (var expensesCategory in ExpenseCategory.categories)
+                          ListTile(
+                            title: Text(expensesCategory.name),
+                            onTap: () {
+                              setState(() {
+                                if (selectedCategory == expensesCategory.id) {
+                                  selectedCategory = null;
+                                } else {
+                                  selectedCategory = expensesCategory.id;
+                                }
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            tileColor: selectedCategory == expensesCategory.id
+                                ? Colors.grey.withOpacity(0.3)
+                                : null,
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              ExpansionTile(
-                title: const Text('Expenses'),
-                children: [
-                  for (var expensesCategory in ExpenseCategory.categories)
-                    ListTile(
-                      title: Text(expensesCategory.name),
-                      onTap: () {
-                        setState(() {
-                          if (selectedCategory == expensesCategory.id) {
-                            selectedCategory = null;
-                          } else {
-                            selectedCategory = expensesCategory.id;
-                          }
-                        });
-                        Navigator.of(context).pop();
-                      },
-                      tileColor: selectedCategory == expensesCategory.id
-                          ? Colors.grey.withOpacity(0.3)
-                          : null,
-                    ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            _showInputUserScreen(context);
+                          },
+                          child: const Row(
+                            children: [
+                              FaIcon(
+                                FontAwesomeIcons.user,
+                                size: 16,
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                "User",
+                                style: TextStyle(fontSize: 17),
+                              ),
+                            ],
+                          )),
+                    ],
+                  ),
                 ],
               ),
             ],
@@ -589,6 +647,17 @@ class _HomeState extends State<Home> {
         fullscreenDialog: true,
         builder: (BuildContext context) {
           return IncomeScreen();
+        },
+      ),
+    );
+  }
+
+  void _showInputUserScreen(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (BuildContext context) {
+          return UserInputScreen();
         },
       ),
     );

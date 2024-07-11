@@ -2,8 +2,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get_it/get_it.dart';
-import 'package:path/path.dart';
 import 'package:zavrsni_rad/home.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expense_model.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expenses.dart';

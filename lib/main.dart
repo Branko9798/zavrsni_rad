@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:uuid/uuid.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/home.dart';
 import 'package:zavrsni_rad/statistics/statistics_model.dart';
 import 'package:zavrsni_rad/statistics/statistics_screen.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expense_model.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income_model.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get_it/get_it.dart';
+import 'package:zavrsni_rad/user/user.dart';
+import 'package:zavrsni_rad/user/user_model.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -18,10 +21,31 @@ void main() {
   getIt.registerSingleton<IncomeModel>(IncomeModel());
   getIt.registerSingleton<ExpensesModel>(ExpensesModel());
   getIt.registerSingleton<StatisticsModel>(StatisticsModel());
+  getIt.registerSingleton<UserModel>(UserModel());
 
   initializeDateFormatting();
 
+  _checkAndGenerateId();
+
   runApp(const MyApp());
+}
+
+Future<void> _checkAndGenerateId() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  if (!prefs.containsKey('userId')) {
+    String userUuid = const Uuid().v4();
+    await prefs.setString('userId', userUuid);
+
+    final userModel = getIt<UserModel>();
+
+    final newUser = User(
+      userId: userUuid,
+      firstName: '',
+      lastName: '',
+    );
+    userModel.addUser(newUser);
+  }
 }
 
 class MyApp extends StatefulWidget {
