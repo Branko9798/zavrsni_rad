@@ -7,9 +7,11 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 // ignore: depend_on_referenced_packages
 import 'package:sqlite3/sqlite3.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_category.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expenses.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_category.dart';
 import 'package:zavrsni_rad/user/user.dart';
 
 part 'database.g.dart';
@@ -17,7 +19,7 @@ part 'database.g.dart';
 /// Main application database
 @DriftDatabase(
   
-  tables: [IncomesTable,ExpensesTable,UserTable],
+  tables: [IncomesTable,ExpensesTable,UserTable,IncomesCategoryTable,ExpenseCategoryTable],
 )
 class AppDatabase extends _$AppDatabase {
   /// AppDatabase constructor

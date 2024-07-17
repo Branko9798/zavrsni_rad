@@ -7,6 +7,7 @@ import 'package:zavrsni_rad/incomes_expenses/expenses/expense_model.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expenses.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expenses_screen.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_category_model.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income_model.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income_screen.dart';
 import 'package:zavrsni_rad/main.dart';
@@ -315,6 +316,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                         "${income.date.day}/${income.date.month}/${income.date.year}",
                                         style:
                                             const TextStyle(color: Colors.grey),
+                                        textAlign: TextAlign.center,
                                       ),
                                     ],
                                   ),
@@ -391,17 +393,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                           ),
                                           Expanded(
                                             flex: 1,
-                                            child: Container(
-                                              decoration: const BoxDecoration(
-                                                borderRadius: BorderRadius.only(
-                                                  topRight: Radius.circular(15),
-                                                  bottomRight:
-                                                      Radius.circular(15),
-                                                ),
+                                            child: Center(
+                                              child: StreamBuilder(
+                                                stream:
+                                                    getIt<IncomeCategoryModel>()
+                                                        .getCategoryName(income
+                                                            .incomeCategoryId),
+                                                builder: ((context, snapshot) {
+                                                  if (!snapshot.hasData ||
+                                                      snapshot.data == null) {
+                                                    return SizedBox();
+                                                  }
+                                                  return Text(
+                                                      snapshot.data ?? '');
+                                                }),
                                               ),
-                                              child: Center(
-                                                  child: FaIcon(
-                                                      income.category!.icon)),
                                             ),
                                           ),
                                         ],
@@ -614,17 +620,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                           ),
                                           Expanded(
                                             flex: 1,
-                                            child: Container(
-                                              decoration: const BoxDecoration(
-                                                borderRadius: BorderRadius.only(
-                                                  topRight: Radius.circular(15),
-                                                  bottomRight:
-                                                      Radius.circular(15),
-                                                ),
+                                            child: Center(
+                                              child: StreamBuilder(
+                                                stream:
+                                                    getIt<IncomeCategoryModel>()
+                                                        .getCategoryName(income
+                                                            .incomeCategoryId),
+                                                builder: ((context, snapshot) {
+                                                  if (!snapshot.hasData ||
+                                                      snapshot.data == null) {
+                                                    return SizedBox();
+                                                  }
+                                                  return Text(
+                                                      snapshot.data ?? '');
+                                                }),
                                               ),
-                                              child: Center(
-                                                  child: FaIcon(
-                                                      income.category!.icon)),
                                             ),
                                           ),
                                         ],
@@ -946,9 +956,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                                           Radius.circular(15),
                                                     ),
                                                   ),
-                                                  child: Center(
-                                                      child: FaIcon(income
-                                                          .category!.icon)),
+                                                  child: SizedBox(),
                                                 ),
                                               ),
                                             ],
@@ -1083,9 +1091,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                                           Radius.circular(15),
                                                     ),
                                                   ),
-                                                  child: Center(
-                                                      child: FaIcon(expense
-                                                          .category!.icon)),
+                                                  child: SizedBox(),
                                                 ),
                                               ),
                                             ],
@@ -1326,8 +1332,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                               ),
                                             ),
                                             child: Center(
-                                                child: FaIcon(
-                                                    expense.category!.icon)),
+                                              child: SizedBox(),
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -1532,9 +1538,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                                     Radius.circular(15),
                                               ),
                                             ),
-                                            child: Center(
-                                                child: FaIcon(
-                                                    expense.category!.icon)),
+                                            child: SizedBox(),
                                           ),
                                         ),
                                       ],

@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:zavrsni_rad/database/database.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_category.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expense_category.dart';
@@ -74,7 +75,7 @@ class StatisticsModel {
               tbl.date.month.equals(date.month) &
               tbl.date.year.equals(date.year)))
         .watch()
-        .map((expenses) {
+        .asyncMap((expenses) async {
       var expensesTotalByCategory = <ExpenseCategory, double>{};
 
       if (expenses.isEmpty) {
@@ -86,15 +87,16 @@ class StatisticsModel {
           .reduce((value, element) => value + element);
 
       for (var expense in expenses) {
-        if (expense.category == null) {
+        final category = await expense.category;
+        if (category == null) {
           continue;
         }
 
-        if (expensesTotalByCategory[expense.category!] == null) {
-          expensesTotalByCategory[expense.category!] = 0.0;
+        if (expensesTotalByCategory[category] == null) {
+          expensesTotalByCategory[category] = 0.0;
         }
-        expensesTotalByCategory[expense.category!] =
-            expensesTotalByCategory[expense.category!]! + expense.expenseValue;
+        expensesTotalByCategory[category] =
+            expensesTotalByCategory[category]! + expense.expenseValue;
       }
 
       final sectionData = expensesTotalByCategory.entries.map(
@@ -106,8 +108,8 @@ class StatisticsModel {
             value: value,
             title: "${percentage.toStringAsFixed(0)}%",
             titleStyle: const TextStyle(color: Colors.white),
-            color: key.color,
-            legendTitle: key.name,
+            color: Color(key.categoryColor),
+            legendTitle: key.categoryName,
           );
         },
       ).toList();
@@ -122,7 +124,7 @@ class StatisticsModel {
               tbl.date.month.equals(date.month) &
               tbl.date.year.equals(date.year)))
         .watch()
-        .map((incomes) {
+        .asyncMap((incomes) async {
       var incomesTotalByCategory = <IncomeCategory, double>{};
 
       if (incomes.isEmpty) {
@@ -134,15 +136,16 @@ class StatisticsModel {
           .reduce((value, element) => value + element);
 
       for (var income in incomes) {
-        if (income.category == null) {
+        final category = await income.category;
+        if (category == null) {
           continue;
         }
 
-        if (incomesTotalByCategory[income.category!] == null) {
-          incomesTotalByCategory[income.category!] = 0.0;
+        if (incomesTotalByCategory[category] == null) {
+          incomesTotalByCategory[category] = 0.0;
         }
-        incomesTotalByCategory[income.category!] =
-            incomesTotalByCategory[income.category!]! + income.incomeValue;
+        incomesTotalByCategory[category] =
+            incomesTotalByCategory[category]! + income.incomeValue;
       }
 
       final sectionData = incomesTotalByCategory.entries.map(
@@ -154,8 +157,8 @@ class StatisticsModel {
             value: value,
             title: "${percentage.toStringAsFixed(0)}%",
             titleStyle: const TextStyle(color: Colors.white),
-            color: key.color,
-            legendTitle: key.name,
+            color: Color(key.categoryColor),
+            legendTitle: key.categoryName,
           );
         },
       ).toList();

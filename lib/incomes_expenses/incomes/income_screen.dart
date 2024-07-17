@@ -1,7 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_category.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_category_model.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_category_screen.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expenses_screen.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income.dart';
@@ -20,9 +27,7 @@ class IncomeScreen extends StatefulWidget {
 
 class _IncomeScreenState extends State<IncomeScreen> {
   final incomeModel = getIt<IncomeModel>();
-
-  String? selectedIconId;
-  String? selectedIconName;
+  final categoryModel = getIt<IncomeCategoryModel>();
 
   DateFormat dateFormatter = DateFormat.yMd('hr');
 
@@ -32,27 +37,24 @@ class _IncomeScreenState extends State<IncomeScreen> {
 
   DateTime date = DateTime.now();
 
-  int? selectedIndex;
-
-  IncomeCategory? get selectedCategory =>
-      selectedIndex == null ? null : IncomeCategory.categories[selectedIndex!];
+  IncomeCategory? selectedCategory;
 
   @override
   void initState() {
-    selectedIndex = IncomeCategory.categories.indexWhere((element) =>
-        element.id.toLowerCase() ==
-        widget.incomeToEdit?.incomeCategoryId.toLowerCase());
-
-    if (selectedIndex == -1) {
-      selectedIndex = null;
-    }
+    _loadCategory();
 
     incomeValue.text = widget.incomeToEdit?.incomeValue.toString() ?? "";
     note.text = widget.incomeToEdit?.incomeNote ?? "";
     date = widget.incomeToEdit?.date ?? DateTime.now();
 
-    // TODO: implement initState
     super.initState();
+  }
+
+  Future<void> _loadCategory() async {
+    final initialCategory = await widget.incomeToEdit?.category;
+    setState(() {
+      selectedCategory = initialCategory;
+    });
   }
 
   @override
@@ -130,53 +132,85 @@ class _IncomeScreenState extends State<IncomeScreen> {
             ),
           ),
           Expanded(
-            child: GridView.builder(
-              itemCount: IncomeCategory.categories.length,
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              itemBuilder: (context, index) {
-                final incomeCategory = IncomeCategory.categories[index];
+            child: StreamBuilder<List<IncomeCategory>>(
+                stream: categoryModel.allCategories(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const SizedBox();
+                  }
 
-                return Column(
-                  children: [
-                    Container(
-                        height: 55,
-                        width: 55,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: selectedIndex == index
-                                ? Colors.tealAccent[200]
-                                : Colors.grey[300]),
-                        child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                if (selectedIndex == index) {
-                                  selectedIndex = null;
-                                } else {
-                                  selectedIndex = index;
-                                }
-                              });
-                            },
-                            icon: FaIcon(
-                              incomeCategory.icon,
-                            ))),
-                    Text(incomeCategory.name),
-                  ],
-                );
-              },
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
+                  return GridView.builder(
+                    itemCount: snapshot.requireData.length,
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    itemBuilder: (context, index) {
+                      final incomeCategory = snapshot.requireData[index];
+
+                      return Column(
+                        children: [
+                          Container(
+                            height: 55,
+                            width: 55,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: selectedCategory?.categoryId ==
+                                        incomeCategory.categoryId
+                                    ? Colors.tealAccent[200]
+                                    : Colors.grey[300]),
+                            child: TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (selectedCategory?.categoryId ==
+                                      incomeCategory.categoryId) {
+                                    selectedCategory = null;
+                                  } else {
+                                    selectedCategory = incomeCategory;
+                                  }
+                                });
+                              },
+                              child: Text(incomeCategory.categoryName),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                  );
+                }),
+          ),
+          AnimatedContainer(
+            duration: selectedCategory == null
+                ? const Duration(milliseconds: 500)
+                : const Duration(milliseconds: 250),
+            height: selectedCategory == null ? 100 : 0,
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: FloatingActionButton(
+                  backgroundColor: Colors.tealAccent[400],
+                  onPressed: () {
+                    _showIncomeCategoryScreen(context);
+                  },
+                  child: const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ),
           AnimatedContainer(
-            duration: selectedIndex == null
+            duration: selectedCategory == null
                 ? const Duration(milliseconds: 500)
                 : const Duration(milliseconds: 250),
             color: Colors.grey[100],
-            height: selectedIndex == null ? 0 : 300,
-            curve: selectedIndex == null ? Curves.easeInBack : Curves.easeIn,
+            height: selectedCategory == null ? 0 : 268,
+            curve: selectedCategory == null ? Curves.easeInBack : Curves.easeIn,
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: SingleChildScrollView(
@@ -261,7 +295,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                               ],
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],
@@ -285,23 +319,45 @@ class _IncomeScreenState extends State<IncomeScreen> {
     );
   }
 
-  void saveButton() {
+  void _showIncomeCategoryScreen(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (BuildContext context) {
+          return IncomeCategoryScreen();
+        },
+      ),
+    );
+  }
+
+  Future<void> saveButton() async {
     if (selectedCategory == null) {
-      // TODO: Show error
+      const SnackBar(
+        content: Text("Empty input"),
+      );
       return;
     }
+    final userUuid =
+        (await SharedPreferences.getInstance()).getString('userId');
+
+    if (userUuid == null) {
+      return;
+    }
+    
+
     final incomeDb = Income(
-      widget.incomeToEdit?.id ?? Uuid().v4(),
-      note.text,
-      double.parse(incomeValue.value.text),
-      selectedCategory!.id,
-      date.startOfDay,
-    );
+        widget.incomeToEdit?.id ?? Uuid().v4(),
+        note.text,
+        double.parse(incomeValue.value.text),
+        selectedCategory!.categoryId,
+        date.startOfDay,
+        userUuid);
     if (widget.incomeToEdit == null) {
       incomeModel.addIncome(incomeDb);
     } else {
       incomeModel.updateIncome(incomeDb);
     }
     Navigator.pop(context);
+    return;
   }
 }

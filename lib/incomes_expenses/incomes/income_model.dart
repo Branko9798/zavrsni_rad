@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income.dart';
@@ -31,4 +32,6 @@ class IncomeModel {
   void updateIncome(Income income) async {
     await db.incomesTable.update().replace(income);
   }
+
+ 
 }

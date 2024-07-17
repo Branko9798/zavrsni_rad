@@ -31,14 +31,15 @@ class UserInputScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FaIcon(
-                  FontAwesomeIcons.user,
+                  FontAwesomeIcons.userLarge,
                   size: 20,
                   color: Colors.white,
                 ),
                 SizedBox(width: 5),
                 Text(
                   "User",
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -65,67 +66,73 @@ class UserInputScreen extends StatelessWidget {
             centerTitle: true,
           ),
           body: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              children: <Widget>[
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: firstName,
-                  textInputAction: TextInputAction.go,
-                  validator: (value) {
-                    RegExp regex = RegExp(r'^[a-zA-Z ]+$');
-                    if (value?.isEmpty ?? true) {
-                      return 'Can not be empty';
-                    }
-                    if (!regex.hasMatch(value ?? "")) {
-                      return 'Invalid input';
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (value) {
-                    saveButton();
-                  },
-                  autovalidateMode: AutovalidateMode.always,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: 'First Name: ',
-                    suffixIcon: IconButton(
-                      onPressed: firstName.clear,
-                      icon: const Icon(Icons.clear),
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      "User Input",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.black87,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 15),
-                TextFormField(
-                  controller: lastName,
-                  textInputAction: TextInputAction.go,
-                  validator: (value) {
-                    RegExp regex = RegExp(r'^[a-zA-Z ]+$');
-                    if (value?.isEmpty ?? true) {
-                      return 'Can not be empty';
-                    }
-                    if (!regex.hasMatch(value ?? "")) {
-                      return 'Invalid input';
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (value) {
-                    saveButton();
-                  },
-                  autovalidateMode: AutovalidateMode.always,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: 'Last Name: ',
-                    suffixIcon: IconButton(
-                      onPressed: lastName.clear,
-                      icon: const Icon(Icons.clear),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextFormField(
+                      controller: firstName,
+                      textInputAction: TextInputAction.go,
+                      onFieldSubmitted: (value) {
+                        saveButton();
+                      },
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: 'First Name: ',
+                        suffixIcon: IconButton(
+                          onPressed: firstName.clear,
+                          icon: const Icon(Icons.clear),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 15),
-              ],
-            ),
-          ),
+                  const SizedBox(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextFormField(
+                      controller: lastName,
+                      textInputAction: TextInputAction.go,
+                      validator: (value) {
+                        RegExp regex = RegExp(r'^[a-zA-Z ]+$');
+                        if (value?.isEmpty ?? true) {
+                          return 'Cannot be empty';
+                        }
+                        if (!regex.hasMatch(value ?? "")) {
+                          return 'Invalid input';
+                        }
+                        return null;
+                      },
+                      onFieldSubmitted: (value) {
+                        saveButton();
+                      },
+                      autovalidateMode: AutovalidateMode.always,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: 'Last Name: ',
+                        suffixIcon: IconButton(
+                          onPressed: lastName.clear,
+                          icon: const Icon(Icons.clear),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              )),
         );
       },
     );

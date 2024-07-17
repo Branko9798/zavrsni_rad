@@ -4,7 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:path/path.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_category_model.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_category.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_category_model.dart';
 
 import 'package:zavrsni_rad/main.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expense_category.dart';
@@ -16,7 +18,6 @@ import 'package:zavrsni_rad/incomes_expenses/incomes/income_category.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income_model.dart';
 import 'package:zavrsni_rad/incomes_expenses/incomes/income_screen.dart';
 import 'package:zavrsni_rad/statistics/statistics_model.dart';
-import 'package:zavrsni_rad/user/user.dart';
 import 'package:zavrsni_rad/user/user_input_screen.dart';
 import 'package:zavrsni_rad/user/user_model.dart';
 
@@ -50,7 +51,7 @@ class _HomeState extends State<Home> {
               _scaffoldKey.currentState?.openDrawer();
             },
             icon: const Icon(
-              Icons.filter_alt_rounded,
+              Icons.menu,
               color: Colors.white,
               weight: 500,
             ),
@@ -139,54 +140,79 @@ class _HomeState extends State<Home> {
                 ),
               ),
               Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: [
-                    ExpansionTile(
-                      title: const Text('Incomes'),
-                      children: [
-                        for (var incomeCategory in IncomeCategory.categories)
-                          ListTile(
-                            title: Text(incomeCategory.name),
-                            onTap: () {
-                              setState(() {
-                                if (selectedCategory == incomeCategory.id) {
-                                  selectedCategory = null;
-                                } else {
-                                  selectedCategory = incomeCategory.id;
-                                }
-                              });
-                              Navigator.of(context).pop();
-                            },
-                            tileColor: selectedCategory == incomeCategory.id
-                                ? Colors.grey.withOpacity(0.3)
-                                : null,
+                child: StreamBuilder<List<IncomeCategory>>(
+                    stream: getIt<IncomeCategoryModel>().allCategories(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return SizedBox();
+                      }
+                      return ListView(
+                        padding: EdgeInsets.zero,
+                        children: [
+                          ExpansionTile(
+                            title: const Text('Incomes'),
+                            children: [
+                              for (var incomeCategory in snapshot.requireData)
+                                ListTile(
+                                  title: Text(incomeCategory.categoryName),
+                                  onTap: () {
+                                    setState(() {
+                                      if (selectedCategory ==
+                                          incomeCategory.categoryId) {
+                                        selectedCategory = null;
+                                      } else {
+                                        selectedCategory =
+                                            incomeCategory.categoryId;
+                                      }
+                                    });
+                                    Navigator.of(context).pop();
+                                  },
+                                  tileColor: selectedCategory ==
+                                          incomeCategory.categoryId
+                                      ? Colors.grey.withOpacity(0.3)
+                                      : null,
+                                ),
+                            ],
                           ),
-                      ],
-                    ),
-                    ExpansionTile(
-                      title: const Text('Expenses'),
+                        ],
+                      );
+                    }),
+              ),
+              Expanded(
+                child: StreamBuilder<List<ExpenseCategory>>(
+                  stream: getIt<ExpenseCategoryModel>().allCategories(),
+                  builder: (context, snapshot) {
+                    return ListView(
+                      padding: EdgeInsets.zero,
                       children: [
-                        for (var expensesCategory in ExpenseCategory.categories)
-                          ListTile(
-                            title: Text(expensesCategory.name),
-                            onTap: () {
-                              setState(() {
-                                if (selectedCategory == expensesCategory.id) {
-                                  selectedCategory = null;
-                                } else {
-                                  selectedCategory = expensesCategory.id;
-                                }
-                              });
-                              Navigator.of(context).pop();
-                            },
-                            tileColor: selectedCategory == expensesCategory.id
-                                ? Colors.grey.withOpacity(0.3)
-                                : null,
-                          ),
+                        ExpansionTile(
+                          title: const Text('Incomes'),
+                          children: [
+                            for (var expenseCategory in snapshot.requireData)
+                              ListTile(
+                                title: Text(expenseCategory.categoryName),
+                                onTap: () {
+                                  setState(() {
+                                    if (selectedCategory ==
+                                        expenseCategory.categoryId) {
+                                      selectedCategory = null;
+                                    } else {
+                                      selectedCategory =
+                                          expenseCategory.categoryId;
+                                    }
+                                  });
+                                  Navigator.of(context).pop();
+                                },
+                                tileColor: selectedCategory ==
+                                        expenseCategory.categoryId
+                                    ? Colors.grey.withOpacity(0.3)
+                                    : null,
+                              ),
+                          ],
+                        ),
                       ],
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
               Column(
@@ -432,17 +458,21 @@ class _HomeState extends State<Home> {
                                         ),
                                         Expanded(
                                           flex: 1,
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                              borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(15),
-                                                bottomRight:
-                                                    Radius.circular(15),
-                                              ),
+                                          child: Center(
+                                            child: StreamBuilder(
+                                              stream:
+                                                  getIt<IncomeCategoryModel>()
+                                                      .getCategoryName(income
+                                                          .incomeCategoryId),
+                                              builder: ((context, snapshot) {
+                                                if (!snapshot.hasData ||
+                                                    snapshot.data == null) {
+                                                  return SizedBox();
+                                                }
+                                                return Text(
+                                                    snapshot.data ?? '');
+                                              }),
                                             ),
-                                            child: Center(
-                                                child: FaIcon(
-                                                    income.category!.icon)),
                                           ),
                                         ),
                                       ],
@@ -575,17 +605,21 @@ class _HomeState extends State<Home> {
                                         ),
                                         Expanded(
                                           flex: 1,
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                              borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(15),
-                                                bottomRight:
-                                                    Radius.circular(15),
-                                              ),
+                                          child: Center(
+                                            child: StreamBuilder(
+                                              stream:
+                                                  getIt<ExpenseCategoryModel>()
+                                                      .getCategoryName(expense
+                                                          .expensesCategoryId),
+                                              builder: ((context, snapshot) {
+                                                if (!snapshot.hasData ||
+                                                    snapshot.data == null) {
+                                                  return SizedBox();
+                                                }
+                                                return Text(
+                                                    snapshot.data ?? '');
+                                              }),
                                             ),
-                                            child: Center(
-                                                child: FaIcon(
-                                                    expense.category!.icon)),
                                           ),
                                         ),
                                       ],

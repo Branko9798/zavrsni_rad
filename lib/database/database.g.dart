@@ -39,9 +39,14 @@ class $IncomesTableTable extends IncomesTable
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       defaultValue: currentDate);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, incomeNote, incomeValue, incomeCategoryId, date];
+      [id, incomeNote, incomeValue, incomeCategoryId, date, userId];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -85,6 +90,12 @@ class $IncomesTableTable extends IncomesTable
       context.handle(
           _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
     }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
     return context;
   }
 
@@ -104,6 +115,8 @@ class $IncomesTableTable extends IncomesTable
           DriftSqlType.string, data['${effectivePrefix}income_category_id'])!,
       attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
     );
   }
 
@@ -119,6 +132,7 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
   final Value<double> incomeValue;
   final Value<String> incomeCategoryId;
   final Value<DateTime> date;
+  final Value<String> userId;
   final Value<int> rowid;
   const IncomesTableCompanion({
     this.id = const Value.absent(),
@@ -126,6 +140,7 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
     this.incomeValue = const Value.absent(),
     this.incomeCategoryId = const Value.absent(),
     this.date = const Value.absent(),
+    this.userId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   IncomesTableCompanion.insert({
@@ -134,17 +149,20 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
     required double incomeValue,
     required String incomeCategoryId,
     this.date = const Value.absent(),
+    required String userId,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         incomeNote = Value(incomeNote),
         incomeValue = Value(incomeValue),
-        incomeCategoryId = Value(incomeCategoryId);
+        incomeCategoryId = Value(incomeCategoryId),
+        userId = Value(userId);
   static Insertable<Income> custom({
     Expression<String>? id,
     Expression<String>? incomeNote,
     Expression<double>? incomeValue,
     Expression<String>? incomeCategoryId,
     Expression<DateTime>? date,
+    Expression<String>? userId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -153,6 +171,7 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
       if (incomeValue != null) 'income_value': incomeValue,
       if (incomeCategoryId != null) 'income_category_id': incomeCategoryId,
       if (date != null) 'date': date,
+      if (userId != null) 'user_id': userId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -163,6 +182,7 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
       Value<double>? incomeValue,
       Value<String>? incomeCategoryId,
       Value<DateTime>? date,
+      Value<String>? userId,
       Value<int>? rowid}) {
     return IncomesTableCompanion(
       id: id ?? this.id,
@@ -170,6 +190,7 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
       incomeValue: incomeValue ?? this.incomeValue,
       incomeCategoryId: incomeCategoryId ?? this.incomeCategoryId,
       date: date ?? this.date,
+      userId: userId ?? this.userId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -192,6 +213,9 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
     if (date.present) {
       map['date'] = Variable<DateTime>(date.value);
     }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -206,6 +230,7 @@ class IncomesTableCompanion extends UpdateCompanion<Income> {
           ..write('incomeValue: $incomeValue, ')
           ..write('incomeCategoryId: $incomeCategoryId, ')
           ..write('date: $date, ')
+          ..write('userId: $userId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -248,9 +273,14 @@ class $ExpensesTableTable extends ExpensesTable
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       defaultValue: currentDate);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, expenseNote, expenseValue, expensesCategoryId, date];
+      [id, expenseNote, expenseValue, expensesCategoryId, date, userId];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -294,6 +324,12 @@ class $ExpensesTableTable extends ExpensesTable
       context.handle(
           _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
     }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
     return context;
   }
 
@@ -313,6 +349,8 @@ class $ExpensesTableTable extends ExpensesTable
           DriftSqlType.string, data['${effectivePrefix}expenses_category_id'])!,
       attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
     );
   }
 
@@ -328,6 +366,7 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
   final Value<double> expenseValue;
   final Value<String> expensesCategoryId;
   final Value<DateTime> date;
+  final Value<String> userId;
   final Value<int> rowid;
   const ExpensesTableCompanion({
     this.id = const Value.absent(),
@@ -335,6 +374,7 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
     this.expenseValue = const Value.absent(),
     this.expensesCategoryId = const Value.absent(),
     this.date = const Value.absent(),
+    this.userId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ExpensesTableCompanion.insert({
@@ -343,17 +383,20 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
     required double expenseValue,
     required String expensesCategoryId,
     this.date = const Value.absent(),
+    required String userId,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         expenseNote = Value(expenseNote),
         expenseValue = Value(expenseValue),
-        expensesCategoryId = Value(expensesCategoryId);
+        expensesCategoryId = Value(expensesCategoryId),
+        userId = Value(userId);
   static Insertable<Expense> custom({
     Expression<String>? id,
     Expression<String>? expenseNote,
     Expression<double>? expenseValue,
     Expression<String>? expensesCategoryId,
     Expression<DateTime>? date,
+    Expression<String>? userId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -363,6 +406,7 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
       if (expensesCategoryId != null)
         'expenses_category_id': expensesCategoryId,
       if (date != null) 'date': date,
+      if (userId != null) 'user_id': userId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -373,6 +417,7 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
       Value<double>? expenseValue,
       Value<String>? expensesCategoryId,
       Value<DateTime>? date,
+      Value<String>? userId,
       Value<int>? rowid}) {
     return ExpensesTableCompanion(
       id: id ?? this.id,
@@ -380,6 +425,7 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
       expenseValue: expenseValue ?? this.expenseValue,
       expensesCategoryId: expensesCategoryId ?? this.expensesCategoryId,
       date: date ?? this.date,
+      userId: userId ?? this.userId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -402,6 +448,9 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
     if (date.present) {
       map['date'] = Variable<DateTime>(date.value);
     }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -416,6 +465,7 @@ class ExpensesTableCompanion extends UpdateCompanion<Expense> {
           ..write('expenseValue: $expenseValue, ')
           ..write('expensesCategoryId: $expensesCategoryId, ')
           ..write('date: $date, ')
+          ..write('userId: $userId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -574,15 +624,396 @@ class UserTableCompanion extends UpdateCompanion<User> {
   }
 }
 
+class $IncomesCategoryTableTable extends IncomesCategoryTable
+    with TableInfo<$IncomesCategoryTableTable, IncomeCategory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $IncomesCategoryTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _categoryIdMeta =
+      const VerificationMeta('categoryId');
+  @override
+  late final GeneratedColumn<String> categoryId = GeneratedColumn<String>(
+      'category_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _categoryNameMeta =
+      const VerificationMeta('categoryName');
+  @override
+  late final GeneratedColumn<String> categoryName = GeneratedColumn<String>(
+      'category_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _categoryColorMeta =
+      const VerificationMeta('categoryColor');
+  @override
+  late final GeneratedColumn<int> categoryColor = GeneratedColumn<int>(
+      'category_color', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [categoryId, categoryName, categoryColor, userId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'incomes_category_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<IncomeCategory> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('category_id')) {
+      context.handle(
+          _categoryIdMeta,
+          categoryId.isAcceptableOrUnknown(
+              data['category_id']!, _categoryIdMeta));
+    } else if (isInserting) {
+      context.missing(_categoryIdMeta);
+    }
+    if (data.containsKey('category_name')) {
+      context.handle(
+          _categoryNameMeta,
+          categoryName.isAcceptableOrUnknown(
+              data['category_name']!, _categoryNameMeta));
+    } else if (isInserting) {
+      context.missing(_categoryNameMeta);
+    }
+    if (data.containsKey('category_color')) {
+      context.handle(
+          _categoryColorMeta,
+          categoryColor.isAcceptableOrUnknown(
+              data['category_color']!, _categoryColorMeta));
+    } else if (isInserting) {
+      context.missing(_categoryColorMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {categoryId};
+  @override
+  IncomeCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return IncomeCategory(
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category_id'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category_name'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}category_color'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+    );
+  }
+
+  @override
+  $IncomesCategoryTableTable createAlias(String alias) {
+    return $IncomesCategoryTableTable(attachedDatabase, alias);
+  }
+}
+
+class IncomesCategoryTableCompanion extends UpdateCompanion<IncomeCategory> {
+  final Value<String> categoryId;
+  final Value<String> categoryName;
+  final Value<int> categoryColor;
+  final Value<String> userId;
+  final Value<int> rowid;
+  const IncomesCategoryTableCompanion({
+    this.categoryId = const Value.absent(),
+    this.categoryName = const Value.absent(),
+    this.categoryColor = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  IncomesCategoryTableCompanion.insert({
+    required String categoryId,
+    required String categoryName,
+    required int categoryColor,
+    required String userId,
+    this.rowid = const Value.absent(),
+  })  : categoryId = Value(categoryId),
+        categoryName = Value(categoryName),
+        categoryColor = Value(categoryColor),
+        userId = Value(userId);
+  static Insertable<IncomeCategory> custom({
+    Expression<String>? categoryId,
+    Expression<String>? categoryName,
+    Expression<int>? categoryColor,
+    Expression<String>? userId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (categoryId != null) 'category_id': categoryId,
+      if (categoryName != null) 'category_name': categoryName,
+      if (categoryColor != null) 'category_color': categoryColor,
+      if (userId != null) 'user_id': userId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  IncomesCategoryTableCompanion copyWith(
+      {Value<String>? categoryId,
+      Value<String>? categoryName,
+      Value<int>? categoryColor,
+      Value<String>? userId,
+      Value<int>? rowid}) {
+    return IncomesCategoryTableCompanion(
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
+      categoryColor: categoryColor ?? this.categoryColor,
+      userId: userId ?? this.userId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (categoryId.present) {
+      map['category_id'] = Variable<String>(categoryId.value);
+    }
+    if (categoryName.present) {
+      map['category_name'] = Variable<String>(categoryName.value);
+    }
+    if (categoryColor.present) {
+      map['category_color'] = Variable<int>(categoryColor.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IncomesCategoryTableCompanion(')
+          ..write('categoryId: $categoryId, ')
+          ..write('categoryName: $categoryName, ')
+          ..write('categoryColor: $categoryColor, ')
+          ..write('userId: $userId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ExpenseCategoryTableTable extends ExpenseCategoryTable
+    with TableInfo<$ExpenseCategoryTableTable, ExpenseCategory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExpenseCategoryTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _categoryIdMeta =
+      const VerificationMeta('categoryId');
+  @override
+  late final GeneratedColumn<String> categoryId = GeneratedColumn<String>(
+      'category_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _categoryNameMeta =
+      const VerificationMeta('categoryName');
+  @override
+  late final GeneratedColumn<String> categoryName = GeneratedColumn<String>(
+      'category_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _categoryColorMeta =
+      const VerificationMeta('categoryColor');
+  @override
+  late final GeneratedColumn<int> categoryColor = GeneratedColumn<int>(
+      'category_color', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [categoryId, categoryName, categoryColor, userId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'expense_category_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<ExpenseCategory> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('category_id')) {
+      context.handle(
+          _categoryIdMeta,
+          categoryId.isAcceptableOrUnknown(
+              data['category_id']!, _categoryIdMeta));
+    } else if (isInserting) {
+      context.missing(_categoryIdMeta);
+    }
+    if (data.containsKey('category_name')) {
+      context.handle(
+          _categoryNameMeta,
+          categoryName.isAcceptableOrUnknown(
+              data['category_name']!, _categoryNameMeta));
+    } else if (isInserting) {
+      context.missing(_categoryNameMeta);
+    }
+    if (data.containsKey('category_color')) {
+      context.handle(
+          _categoryColorMeta,
+          categoryColor.isAcceptableOrUnknown(
+              data['category_color']!, _categoryColorMeta));
+    } else if (isInserting) {
+      context.missing(_categoryColorMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {categoryId};
+  @override
+  ExpenseCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExpenseCategory(
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category_id'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category_name'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}category_color'])!,
+      attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+    );
+  }
+
+  @override
+  $ExpenseCategoryTableTable createAlias(String alias) {
+    return $ExpenseCategoryTableTable(attachedDatabase, alias);
+  }
+}
+
+class ExpenseCategoryTableCompanion extends UpdateCompanion<ExpenseCategory> {
+  final Value<String> categoryId;
+  final Value<String> categoryName;
+  final Value<int> categoryColor;
+  final Value<String> userId;
+  final Value<int> rowid;
+  const ExpenseCategoryTableCompanion({
+    this.categoryId = const Value.absent(),
+    this.categoryName = const Value.absent(),
+    this.categoryColor = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ExpenseCategoryTableCompanion.insert({
+    required String categoryId,
+    required String categoryName,
+    required int categoryColor,
+    required String userId,
+    this.rowid = const Value.absent(),
+  })  : categoryId = Value(categoryId),
+        categoryName = Value(categoryName),
+        categoryColor = Value(categoryColor),
+        userId = Value(userId);
+  static Insertable<ExpenseCategory> custom({
+    Expression<String>? categoryId,
+    Expression<String>? categoryName,
+    Expression<int>? categoryColor,
+    Expression<String>? userId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (categoryId != null) 'category_id': categoryId,
+      if (categoryName != null) 'category_name': categoryName,
+      if (categoryColor != null) 'category_color': categoryColor,
+      if (userId != null) 'user_id': userId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ExpenseCategoryTableCompanion copyWith(
+      {Value<String>? categoryId,
+      Value<String>? categoryName,
+      Value<int>? categoryColor,
+      Value<String>? userId,
+      Value<int>? rowid}) {
+    return ExpenseCategoryTableCompanion(
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
+      categoryColor: categoryColor ?? this.categoryColor,
+      userId: userId ?? this.userId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (categoryId.present) {
+      map['category_id'] = Variable<String>(categoryId.value);
+    }
+    if (categoryName.present) {
+      map['category_name'] = Variable<String>(categoryName.value);
+    }
+    if (categoryColor.present) {
+      map['category_color'] = Variable<int>(categoryColor.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseCategoryTableCompanion(')
+          ..write('categoryId: $categoryId, ')
+          ..write('categoryName: $categoryName, ')
+          ..write('categoryColor: $categoryColor, ')
+          ..write('userId: $userId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $IncomesTableTable incomesTable = $IncomesTableTable(this);
   late final $ExpensesTableTable expensesTable = $ExpensesTableTable(this);
   late final $UserTableTable userTable = $UserTableTable(this);
+  late final $IncomesCategoryTableTable incomesCategoryTable =
+      $IncomesCategoryTableTable(this);
+  late final $ExpenseCategoryTableTable expenseCategoryTable =
+      $ExpenseCategoryTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [incomesTable, expensesTable, userTable];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        incomesTable,
+        expensesTable,
+        userTable,
+        incomesCategoryTable,
+        expenseCategoryTable
+      ];
 }

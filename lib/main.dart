@@ -4,6 +4,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:uuid/uuid.dart';
 import 'package:zavrsni_rad/database/database.dart';
 import 'package:zavrsni_rad/home.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_category_model.dart';
+import 'package:zavrsni_rad/incomes_expenses/incomes/income_category_model.dart';
 import 'package:zavrsni_rad/statistics/statistics_model.dart';
 import 'package:zavrsni_rad/statistics/statistics_screen.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expense_model.dart';
@@ -22,6 +24,8 @@ void main() {
   getIt.registerSingleton<ExpensesModel>(ExpensesModel());
   getIt.registerSingleton<StatisticsModel>(StatisticsModel());
   getIt.registerSingleton<UserModel>(UserModel());
+  getIt.registerSingleton<IncomeCategoryModel>(IncomeCategoryModel());
+  getIt.registerSingleton<ExpenseCategoryModel>(ExpenseCategoryModel());
 
   initializeDateFormatting();
 
