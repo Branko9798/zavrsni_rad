@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zavrsni_rad/home.dart';
+import 'package:zavrsni_rad/incomes_expenses/expenses/expense_category_model.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expense_model.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expenses.dart';
 import 'package:zavrsni_rad/incomes_expenses/expenses/expenses_screen.dart';
@@ -653,6 +654,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   )
                 ],
               ),
+              //////////////////
               Column(
                 children: [
                   ListTile(
@@ -666,7 +668,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       children: [
                         StreamBuilder<Map<String, double>>(
                           stream: getIt<StatisticsModel>()
-                              .averageValuesForCurrentMonth(),
+                              .averageValuesForMonth(date),
                           builder: (context, snapshot) {
                             if (snapshot.hasError) {
                               return const Text("Oops, something went wrong");
@@ -681,7 +683,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                 'Average Expense: \$${averageExpense?.toStringAsFixed(2)}',
                               );
                             } else {
-                              return const Text("");
+                              return const Text(
+                                  "Average Income: 0 \n Average Expense:");
                             }
                           },
                         ),
@@ -718,12 +721,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ),
                           );
                         }
-                        if (snapshot.hasError) {
-                          return const Text('Oops, something went wrong');
-                        }
+
                         var data = snapshot.data;
 
-                        if (data == null) {
+                        if (data == null || data.sections.isEmpty) {
                           return const Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -748,13 +749,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         }
 
                         data = data.copyWith(
-                            centerSpaceColor: Colors.white,
-                            borderData: FlBorderData(show: false),
-                            sectionsSpace: 0,
-                            centerSpaceRadius: 70,
-                            sections: data.sections
-                                .map((e) => e.copyWith(showTitle: true))
-                                .toList());
+                          centerSpaceColor: Colors.white,
+                          borderData: FlBorderData(show: false),
+                          sectionsSpace: 0,
+                          centerSpaceRadius: 70,
+                          sections: data.sections
+                              .map((e) => e.copyWith(showTitle: true))
+                              .toList(),
+                        );
 
                         return Stack(
                           children: [
@@ -945,18 +947,23 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                               ),
                                               Expanded(
                                                 flex: 1,
-                                                child: Container(
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                      topRight:
-                                                          Radius.circular(15),
-                                                      bottomRight:
-                                                          Radius.circular(15),
-                                                    ),
+                                                child: Center(
+                                                  child: StreamBuilder(
+                                                    stream: getIt<
+                                                            IncomeCategoryModel>()
+                                                        .getCategoryName(income
+                                                            .incomeCategoryId),
+                                                    builder:
+                                                        ((context, snapshot) {
+                                                      if (!snapshot.hasData ||
+                                                          snapshot.data ==
+                                                              null) {
+                                                        return SizedBox();
+                                                      }
+                                                      return Text(
+                                                          snapshot.data ?? '');
+                                                    }),
                                                   ),
-                                                  child: SizedBox(),
                                                 ),
                                               ),
                                             ],
@@ -1080,18 +1087,23 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                               ),
                                               Expanded(
                                                 flex: 1,
-                                                child: Container(
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                      topRight:
-                                                          Radius.circular(15),
-                                                      bottomRight:
-                                                          Radius.circular(15),
-                                                    ),
+                                                child: Center(
+                                                  child: StreamBuilder(
+                                                    stream: getIt<
+                                                            ExpenseCategoryModel>()
+                                                        .getCategoryName(expense
+                                                            .expensesCategoryId),
+                                                    builder:
+                                                        ((context, snapshot) {
+                                                      if (!snapshot.hasData ||
+                                                          snapshot.data ==
+                                                              null) {
+                                                        return SizedBox();
+                                                      }
+                                                      return Text(
+                                                          snapshot.data ?? '');
+                                                    }),
                                                   ),
-                                                  child: SizedBox(),
                                                 ),
                                               ),
                                             ],
@@ -1112,6 +1124,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   ),
                 ],
               ),
+              //////////////////
               Column(
                 children: [
                   const ListTile(
@@ -1244,7 +1257,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 15.0),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const Icon(Icons.calendar_today,
                                           color: Colors.grey, size: 16),
@@ -1257,86 +1270,97 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                     ],
                                   ),
                                 ),
-                                Card(
-                                  color: Colors.red[100],
-                                  child: InkWell(
-                                    onLongPress: () {},
-                                    child: Row(
-                                      children: [
-                                        PopupMenuButton(
-                                            itemBuilder: ((context) => [
-                                                  PopupMenuItem(
-                                                    child: ListTile(
-                                                      leading: const Icon(
-                                                          Icons.edit),
-                                                      title: const Text("Edit"),
-                                                      onTap: () {
-                                                        _showExpenseScreen(
-                                                            context,
-                                                            expenseToEdit:
-                                                                expense);
-                                                      },
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Card(
+                                    color: Colors.red[100],
+                                    child: InkWell(
+                                      onLongPress: () {},
+                                      child: Row(
+                                        children: [
+                                          PopupMenuButton(
+                                              itemBuilder: ((context) => [
+                                                    PopupMenuItem(
+                                                      child: ListTile(
+                                                        leading: const Icon(
+                                                            Icons.edit),
+                                                        title:
+                                                            const Text("Edit"),
+                                                        onTap: () {
+                                                          _showExpenseScreen(
+                                                              context,
+                                                              expenseToEdit:
+                                                                  expense);
+                                                        },
+                                                      ),
                                                     ),
+                                                    PopupMenuItem(
+                                                      child: ListTile(
+                                                        leading: const Icon(
+                                                            Icons.delete),
+                                                        title: const Text(
+                                                            "Remove"),
+                                                        onTap: () {
+                                                          ExpensesModel()
+                                                              .removeExpense(
+                                                                  expense);
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                    )
+                                                  ])),
+                                          Expanded(
+                                            flex: 3,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  expense.expenseNote,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
                                                   ),
-                                                  PopupMenuItem(
-                                                    child: ListTile(
-                                                      leading: const Icon(
-                                                          Icons.delete),
-                                                      title:
-                                                          const Text("Remove"),
-                                                      onTap: () {
-                                                        ExpensesModel()
-                                                            .removeExpense(
-                                                                expense);
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                    ),
-                                                  )
-                                                ])),
-                                        Expanded(
-                                          flex: 3,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                expense.expenseNote,
-                                                style: const TextStyle(
-                                                  fontSize: 16,
+                                                  textAlign: TextAlign.center,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                '-${expense.expenseValue} €',
-                                                style: const TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 13,
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  '-${expense.expenseValue} €',
+                                                  style: const TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 13,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                              borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(15),
-                                                bottomRight:
-                                                    Radius.circular(15),
-                                              ),
+                                              ],
                                             ),
+                                          ),
+                                          Expanded(
+                                            flex: 1,
                                             child: Center(
-                                              child: SizedBox(),
+                                              child: StreamBuilder(
+                                                stream: getIt<
+                                                        ExpenseCategoryModel>()
+                                                    .getCategoryName(expense
+                                                        .expensesCategoryId),
+                                                builder: ((context, snapshot) {
+                                                  if (!snapshot.hasData ||
+                                                      snapshot.data == null) {
+                                                    return SizedBox();
+                                                  }
+                                                  return Text(
+                                                      snapshot.data ?? '');
+                                                }),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1351,6 +1375,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   ),
                 ],
               ),
+              ////////////
               Column(
                 children: [
                   const ListTile(
@@ -1451,7 +1476,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 15.0),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const Icon(Icons.calendar_today,
                                           color: Colors.grey, size: 16),
@@ -1464,84 +1489,97 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                     ],
                                   ),
                                 ),
-                                Card(
-                                  color: Colors.red[100],
-                                  child: InkWell(
-                                    onLongPress: () {},
-                                    child: Row(
-                                      children: [
-                                        PopupMenuButton(
-                                            itemBuilder: ((context) => [
-                                                  PopupMenuItem(
-                                                    child: ListTile(
-                                                      leading: const Icon(
-                                                          Icons.edit),
-                                                      title: const Text("Edit"),
-                                                      onTap: () {
-                                                        _showExpenseScreen(
-                                                            context,
-                                                            expenseToEdit:
-                                                                expense);
-                                                      },
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Card(
+                                    color: Colors.red[100],
+                                    child: InkWell(
+                                      onLongPress: () {},
+                                      child: Row(
+                                        children: [
+                                          PopupMenuButton(
+                                              itemBuilder: ((context) => [
+                                                    PopupMenuItem(
+                                                      child: ListTile(
+                                                        leading: const Icon(
+                                                            Icons.edit),
+                                                        title:
+                                                            const Text("Edit"),
+                                                        onTap: () {
+                                                          _showExpenseScreen(
+                                                              context,
+                                                              expenseToEdit:
+                                                                  expense);
+                                                        },
+                                                      ),
                                                     ),
+                                                    PopupMenuItem(
+                                                      child: ListTile(
+                                                        leading: const Icon(
+                                                            Icons.delete),
+                                                        title: const Text(
+                                                            "Remove"),
+                                                        onTap: () {
+                                                          ExpensesModel()
+                                                              .removeExpense(
+                                                                  expense);
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                    )
+                                                  ])),
+                                          Expanded(
+                                            flex: 3,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  expense.expenseNote,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
                                                   ),
-                                                  PopupMenuItem(
-                                                    child: ListTile(
-                                                      leading: const Icon(
-                                                          Icons.delete),
-                                                      title:
-                                                          const Text("Remove"),
-                                                      onTap: () {
-                                                        ExpensesModel()
-                                                            .removeExpense(
-                                                                expense);
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                    ),
-                                                  )
-                                                ])),
-                                        Expanded(
-                                          flex: 3,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                expense.expenseNote,
-                                                style: const TextStyle(
-                                                  fontSize: 16,
+                                                  textAlign: TextAlign.center,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                '-${expense.expenseValue} €',
-                                                style: const TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 13,
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  '-${expense.expenseValue} €',
+                                                  style: const TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 13,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                              borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(15),
-                                                bottomRight:
-                                                    Radius.circular(15),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Center(
+                                              child: StreamBuilder(
+                                                stream: getIt<
+                                                        ExpenseCategoryModel>()
+                                                    .getCategoryName(expense
+                                                        .expensesCategoryId),
+                                                builder: ((context, snapshot) {
+                                                  if (!snapshot.hasData ||
+                                                      snapshot.data == null) {
+                                                    return SizedBox();
+                                                  }
+                                                  return Text(
+                                                      snapshot.data ?? '');
+                                                }),
                                               ),
                                             ),
-                                            child: SizedBox(),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),

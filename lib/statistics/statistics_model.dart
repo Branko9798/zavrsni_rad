@@ -50,14 +50,26 @@ class StatisticsModel {
     return incomesTotal().combineLatest(expensesTotal(), (p0, p1) => p0 - p1);
   }
 
-  Stream<Map<String, double>> averageValuesForCurrentMonth() {
-    final DateTime now = DateTime.now();
-    final int daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+  Stream<Map<String, double>> averageValuesForMonth(DateTime date) {
+    final int daysInMonth = DateTime(date.year, date.month + 1, 0).day;
 
-    final incomeTotalStream = incomesTotal();
-    final expenseTotalStream = expensesTotal();
+    final incomeStream = (getIt<AppDatabase>().incomesTable.select()
+          ..where((tbl) =>
+              tbl.date.month.equals(date.month) &
+              tbl.date.year.equals(date.year)))
+        .watch()
+        .map((incomes) => incomes.fold(0.0,
+            (previousValue, element) => previousValue + element.incomeValue));
 
-    return incomeTotalStream.combineLatest(expenseTotalStream,
+    final expenseStream = (getIt<AppDatabase>().expensesTable.select()
+          ..where((tbl) =>
+              tbl.date.month.equals(date.month) &
+              tbl.date.year.equals(date.year)))
+        .watch()
+        .map((expenses) => expenses.fold(0.0,
+            (previousValue, element) => previousValue + element.expenseValue));
+
+    return incomeStream.combineLatest(expenseStream,
         (incomeTotal, expenseTotal) {
       final double averageIncome = incomeTotal / daysInMonth;
       final double averageExpense = expenseTotal / daysInMonth;
@@ -66,6 +78,9 @@ class StatisticsModel {
         'averageIncome': averageIncome,
         'averageExpense': averageExpense,
       };
+    }).startWith({
+      'averageIncome': 0.0,
+      'averageExpense': 0.0,
     });
   }
 
@@ -168,7 +183,25 @@ class StatisticsModel {
   }
 
   Stream<PieChartData?> incomeExpensePieChart(DateTime date) {
-    return incomesTotal().combineLatest(expensesTotal(),
+    final db = getIt<AppDatabase>();
+
+    final incomeStream = (db.incomesTable.select()
+          ..where((tbl) =>
+              tbl.date.month.equals(date.month) &
+              tbl.date.year.equals(date.year)))
+        .watch()
+        .map((incomes) => incomes.fold(0.0,
+            (previousValue, element) => previousValue + element.incomeValue));
+
+    final expenseStream = (db.expensesTable.select()
+          ..where((tbl) =>
+              tbl.date.month.equals(date.month) &
+              tbl.date.year.equals(date.year)))
+        .watch()
+        .map((expenses) => expenses.fold(0.0,
+            (previousValue, element) => previousValue + element.expenseValue));
+
+    return incomeStream.combineLatest(expenseStream,
         (incomeTotal, expenseTotal) {
       final List<PieChartSectionData> sections = [];
 
@@ -193,7 +226,7 @@ class StatisticsModel {
       }
 
       return PieChartData(sections: sections);
-    });
+    }).startWith(PieChartData(sections: []));
   }
 
   Stream<LineChartData?> incomeLineChartPoints(DateTime date) {
